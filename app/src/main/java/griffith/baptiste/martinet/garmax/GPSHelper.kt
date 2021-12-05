@@ -17,7 +17,7 @@ class GPSHelper(private val context: Context) {
     override fun onLocationChanged(location: Location) {
       Log.e(
         "debug",
-        "Latitude " + location.latitude.toString() + "  | Longitude :" + location.longitude.toString() + " | Altitude: " + location.altitude.toString()
+        "Latitude " + location.latitude.toString() + "  | Longitude :" + location.longitude.toString() + " | Altitude: " + location.altitude.toString() + " | Time: " + location.time.toString()
       )
     }
 
