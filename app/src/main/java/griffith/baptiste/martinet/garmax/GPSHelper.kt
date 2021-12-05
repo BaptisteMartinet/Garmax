@@ -12,6 +12,7 @@ import androidx.core.app.ActivityCompat
 
 class GPSHelper(private val context: Context) {
   private var _isTracking = false
+  private val _gpxHelper = GPXHelper(context)
   private val _locationManager: LocationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
   private val _locationListener = object : LocationListener {
     override fun onLocationChanged(location: Location) {
@@ -19,6 +20,7 @@ class GPSHelper(private val context: Context) {
         "debug",
         "Latitude " + location.latitude.toString() + "  | Longitude :" + location.longitude.toString() + " | Altitude: " + location.altitude.toString() + " | Time: " + location.time.toString()
       )
+      _gpxHelper.writeLocation(location)
     }
 
     override fun onStatusChanged(provider: String, status: Int, extras: Bundle) {}
@@ -34,6 +36,7 @@ class GPSHelper(private val context: Context) {
       return false
     }
     _locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, minTimeMs, minDistanceM, _locationListener)
+    _gpxHelper.create()
     _isTracking = true
     return true
   }
@@ -42,6 +45,7 @@ class GPSHelper(private val context: Context) {
     if (!_isTracking)
       return false
     _locationManager.removeUpdates(_locationListener)
+    _gpxHelper.close()
     _isTracking = false
     return true
   }
