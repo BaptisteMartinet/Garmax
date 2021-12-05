@@ -3,10 +3,9 @@
   android:layout_width="match_parent"
   android:layout_height="match_parent"
   android:gravity="center">
-  <Button
-    android:id="@+id/trackerBtn"
+  <TextView
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:text="Start"
-    android:textSize="30sp"/>
+    android:text="This is where the stats goes."
+    android:textSize="25sp"/>
 </LinearLayout>
