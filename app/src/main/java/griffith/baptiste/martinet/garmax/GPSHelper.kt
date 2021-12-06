@@ -28,6 +28,8 @@ class GPSHelper(private val context: Context) {
 
   fun isTracking() = _isTracking
 
+  fun getCurrentFilePath(): String? = _gpxHelper.getCurrentFilePath()
+
   fun startTracking(minTimeMs: Long, minDistanceM: Float): Boolean {
     if (_isTracking)
       return false

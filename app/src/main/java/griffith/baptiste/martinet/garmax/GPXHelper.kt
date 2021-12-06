@@ -12,10 +12,34 @@ import java.util.*
  */
 
 class GPXHelper(private val context: Context) {
+  class GPXData {
+    var creator: String = ""
+    var version: String = ""
+    var metadata: GPXMetaData = GPXMetaData()
+    var tracks: MutableList<GPXDataTrack> = mutableListOf()
+
+    override fun toString(): String {
+      return "{ creator: $creator, version: $version, metadata: { time: ${metadata.time} }, tracks: $tracks }"
+    }
+  }
+  class GPXMetaData {
+    var time: String = ""
+  }
+  class GPXDataTrack {
+    var name: String = ""
+    var segments: MutableList<MutableList<Location>> = mutableListOf()
+
+    override fun toString(): String {
+      return "{ name: $name, segments: $segments }"
+    }
+  }
+
   private var _file: File? = null
   private val _directoryName: String = "GPStracks"
   private val _extensionName: String = ".gpx"
   private val _dateFormatter = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
+
+  fun getCurrentFilePath(): String? = _file?.absolutePath
 
   fun create(): Boolean {
     if (_file != null)
@@ -69,5 +93,70 @@ class GPXHelper(private val context: Context) {
           "</gpx>"
     _file?.appendText(footer) ?: return false
     return true
+  }
+
+  fun readFile(filepath: String): GPXData {
+    val data = GPXData()
+
+    val file = File(filepath)
+    val lines = file.readLines()
+
+    val reg = Regex("^<([a-z]+)(?:\\s+([a-z]+)=\"([^\"]+)\")?(?:\\s+([a-z]+)=\"([^\"]+)\")?(?:\\s+([a-z]+)=\"([^\"]+)\")?\\s*>(?:(?<content>[^<]*)(?:</[a-z]+>))?\$")
+    var lastOpenedTag = ""
+
+    for (line in lines) {
+      val matchedResults: MatchResult = reg.matchEntire(line) ?: continue
+      val groups = matchedResults.groups.filterIndexed { index, matchGroup -> (index != 0 && matchGroup != null) }
+
+      if (groups.isEmpty())
+        continue
+      when (groups[0]?.value) {
+        "gpx" -> {
+          lastOpenedTag = "gpx"
+          if (groups.size != 5)
+            continue
+          data.creator = groups[2]!!.value
+          data.version = groups[4]!!.value
+        }
+        "metadata" -> {
+          lastOpenedTag = "metadata"
+        }
+        "time" -> {
+          if (groups.size != 2)
+            continue
+          when (lastOpenedTag) {
+            "metadata" -> data.metadata.time = groups[1]!!.value
+            "trkpt" -> data.tracks.last().segments.last().last().time = _dateFormatter.parse(groups[1]!!.value).time
+          }
+        }
+        "trk" -> {
+          lastOpenedTag = "trk"
+          data.tracks.add(GPXDataTrack())
+        }
+        "name" -> {
+          if (groups.size != 2)
+            continue
+          if (lastOpenedTag == "trk")
+            data.tracks.last().name = groups[1]!!.value
+        }
+        "trkseg" -> {
+          if (lastOpenedTag == "trk") {
+            data.tracks.last().segments.add(mutableListOf())
+            lastOpenedTag = "trkseg"
+          }
+        }
+        "trkpt" -> {
+          if (groups.size != 7)
+            continue
+          lastOpenedTag = "trkpt"
+          val loc = Location("")
+          loc.latitude = groups[2]!!.value.toDouble()
+          loc.longitude = groups[4]!!.value.toDouble()
+          loc.altitude = groups[6]!!.value.toDouble()
+          data.tracks.last().segments.last().add(loc)
+        }
+      }
+    }
+    return data
   }
 }

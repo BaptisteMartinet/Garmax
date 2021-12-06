@@ -1,6 +1,7 @@
 package griffith.baptiste.martinet.garmax
 
 import android.Manifest
+import android.content.Intent
 import android.content.pm.PackageManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -9,14 +10,14 @@ import android.widget.Button
 import androidx.core.app.ActivityCompat
 
 class MainActivity : AppCompatActivity() {
-  private lateinit var gpsHelper: GPSHelper
+  private lateinit var _gpsHelper: GPSHelper
   private lateinit var trackerBtn: Button
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.activity_main)
 
-    gpsHelper = GPSHelper(this)
+    _gpsHelper = GPSHelper(this)
 
     trackerBtn = findViewById(R.id.trackerBtn)
     trackerBtn.setOnClickListener {
@@ -25,10 +26,13 @@ class MainActivity : AppCompatActivity() {
   }
 
   private fun switchTrackingMode() {
-    if (gpsHelper.isTracking()) {
-      gpsHelper.stopTracking()
+    if (_gpsHelper.isTracking()) {
+      val filepath = _gpsHelper.getCurrentFilePath()
+      _gpsHelper.stopTracking()
       trackerBtn.text = "start"
-      // TODO launch stats activity
+      val intent = Intent(this, StatsActivity::class.java)
+      intent.putExtra("filepath", filepath)
+      startActivity(intent)
       return
     }
     if (ActivityCompat.checkSelfPermission(this,  Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
@@ -36,7 +40,7 @@ class MainActivity : AppCompatActivity() {
       requestPermissions(arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION), 1)
       return
     }
-    if (!gpsHelper.startTracking(5000, 0f))
+    if (!_gpsHelper.startTracking(5000, 0f))
       return
     trackerBtn.text = "stop"
   }

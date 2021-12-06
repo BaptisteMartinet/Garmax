@@ -1,4 +1,17 @@
 package griffith.baptiste.martinet.garmax
 
-class StatsActivity {
+import android.os.Bundle
+import android.util.Log
+import androidx.appcompat.app.AppCompatActivity
+
+class StatsActivity: AppCompatActivity() {
+  private val _gpxHelper = GPXHelper(this)
+
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
+
+    val filepath: String = intent.extras?.getString("filepath") ?: ""
+    val data = _gpxHelper.readFile(filepath)
+    Log.i("debug", data.toString())
+  }
 }
