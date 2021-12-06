@@ -2,9 +2,11 @@ package griffith.baptiste.martinet.garmax
 
 import android.content.Context
 import android.location.Location
+import android.util.Log
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.collections.ArrayDeque
 
 /*
 * Tip: Check emulator files using Android Studio: View -> Tool Windows -> Device File Explorer
@@ -19,11 +21,15 @@ class GPXHelper(private val context: Context) {
     var tracks: MutableList<GPXDataTrack> = mutableListOf()
 
     override fun toString(): String {
-      return "{ creator: $creator, version: $version, metadata: { time: ${metadata.time} }, tracks: $tracks }"
+      return "{ creator: $creator, version: $version, metadata: $metadata, tracks: $tracks }"
     }
   }
   class GPXMetaData {
     var time: String = ""
+
+    override fun toString(): String {
+      return "{ time: $time }"
+    }
   }
   class GPXDataTrack {
     var name: String = ""
@@ -33,11 +39,39 @@ class GPXHelper(private val context: Context) {
       return "{ name: $name, segments: $segments }"
     }
   }
+  enum class TagEnum {
+    GPX,
+    CLOSE_GPX,
+    METADATA,
+    CLOSE_METADATA,
+    TRACK,
+    CLOSE_TRACK,
+    TRACK_SEGMENT,
+    CLOSE_TRACK_SEGMENT,
+    TRACK_POINT,
+    CLOSE_TRACK_POINT,
+    TIME,
+    NAME,
+  }
+  private val _tags = mapOf(
+    TagEnum.GPX to "gpx",
+    TagEnum.CLOSE_GPX to "/gpx",
+    TagEnum.METADATA to "metadata",
+    TagEnum.CLOSE_METADATA to "/metadata",
+    TagEnum.TRACK to "trk",
+    TagEnum.CLOSE_TRACK to "/trk",
+    TagEnum.TRACK_SEGMENT to "trkseg",
+    TagEnum.CLOSE_TRACK_SEGMENT to "/trkseg",
+    TagEnum.TRACK_POINT to "trkpt",
+    TagEnum.CLOSE_TRACK_POINT to "/trkpt",
+    TagEnum.TIME to "time",
+    TagEnum.NAME to "name",
+  )
 
   private var _file: File? = null
   private val _directoryName: String = "GPStracks"
   private val _extensionName: String = ".gpx"
-  private val _dateFormatter = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
+  private val _dateFormatter = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ", Locale.UK)
 
   fun getCurrentFilePath(): String? = _file?.absolutePath
 
@@ -95,66 +129,117 @@ class GPXHelper(private val context: Context) {
     return true
   }
 
+  private fun createMapFromMatch(matchedResult: MatchResult): Map<String, String> {
+    val groups = matchedResult.groups.filterIndexed { index, matchGroup -> (index != 0 && matchGroup != null) }
+    val map = mutableMapOf<String, String>()
+    if (groups.isEmpty())
+      return map
+    val groupSize = groups.size
+    map["tag"] = groups[0]!!.value
+    var i = 1
+    while (i < groupSize) {
+      if (i + 1 < groupSize) {
+        map[groups[i]!!.value] = groups[i + 1]!!.value
+        i += 2
+      } else {
+        map["content"] = groups[i]!!.value
+        i++
+      }
+    }
+    return map
+  }
+
   fun readFile(filepath: String): GPXData {
     val data = GPXData()
 
     val file = File(filepath)
     val lines = file.readLines()
 
-    val reg = Regex("^<([a-z]+)(?:\\s+([a-z]+)=\"([^\"]+)\")?(?:\\s+([a-z]+)=\"([^\"]+)\")?(?:\\s+([a-z]+)=\"([^\"]+)\")?\\s*>(?:(?<content>[^<]*)(?:</[a-z]+>))?\$")
-    var lastOpenedTag = ""
+    val reg = Regex("^<(/?[a-z]+)(?:\\s+([a-z]+)=\"([^\"]+)\")?(?:\\s+([a-z]+)=\"([^\"]+)\")?(?:\\s+([a-z]+)=\"([^\"]+)\")?\\s*>(?:(?<content>[^<]*)(?:</[a-z]+>))?\$")
+    val openedTags = ArrayDeque<String>()
 
     for (line in lines) {
-      val matchedResults: MatchResult = reg.matchEntire(line) ?: continue
-      val groups = matchedResults.groups.filterIndexed { index, matchGroup -> (index != 0 && matchGroup != null) }
+      val matchedResult: MatchResult = reg.matchEntire(line) ?: continue
+      val groups = createMapFromMatch(matchedResult)
 
       if (groups.isEmpty())
         continue
-      when (groups[0]?.value) {
-        "gpx" -> {
-          lastOpenedTag = "gpx"
-          if (groups.size != 5)
-            continue
-          data.creator = groups[2]!!.value
-          data.version = groups[4]!!.value
+      when (groups["tag"]) {
+        _tags[TagEnum.GPX] -> {
+          if (openedTags.isNotEmpty())
+            throw GPXParsingError(TagEnum.GPX, "Tag stack is not empty.")
+          openedTags.addFirst(_tags[TagEnum.GPX]!!)
+          data.creator = groups["creator"] ?: ""
+          data.version = groups["version"] ?: ""
         }
-        "metadata" -> {
-          lastOpenedTag = "metadata"
+        _tags[TagEnum.CLOSE_GPX] -> {
+          if (openedTags.firstOrNull() != _tags[TagEnum.GPX])
+            throw GPXParsingError(TagEnum.CLOSE_GPX, "Closing non-opened tag.")
+          openedTags.removeFirst()
         }
-        "time" -> {
-          if (groups.size != 2)
-            continue
-          when (lastOpenedTag) {
-            "metadata" -> data.metadata.time = groups[1]!!.value
-            "trkpt" -> data.tracks.last().segments.last().last().time = _dateFormatter.parse(groups[1]!!.value).time
+        _tags[TagEnum.METADATA] -> {
+          if (openedTags.firstOrNull() != _tags[TagEnum.GPX])
+            throw GPXParsingError(TagEnum.METADATA, "Invalid scope.")
+          openedTags.addFirst(_tags[TagEnum.METADATA]!!)
+        }
+        _tags[TagEnum.CLOSE_METADATA] -> {
+          if (openedTags.firstOrNull() != _tags[TagEnum.METADATA])
+            throw GPXParsingError(TagEnum.CLOSE_METADATA, "Invalid scope.")
+          openedTags.removeFirst()
+        }
+        _tags[TagEnum.TIME] -> {
+          val timeContent: String = groups["content"] ?: throw GPXParsingError(TagEnum.TIME, "Missing content.")
+          val timeValue: Long = _dateFormatter.parse(timeContent)?.time ?: throw GPXParsingError(TagEnum.TIME, "Invalid time format.")
+          when (openedTags.firstOrNull()) {
+            _tags[TagEnum.METADATA] -> data.metadata.time = timeContent
+            _tags[TagEnum.TRACK_POINT] -> data.tracks.last().segments.last().last().time = timeValue
+            else -> throw GPXParsingError(TagEnum.TIME, "Invalid scope.")
           }
         }
-        "trk" -> {
-          lastOpenedTag = "trk"
+        _tags[TagEnum.TRACK] -> {
+          if (openedTags.firstOrNull() != _tags[TagEnum.GPX])
+            throw GPXParsingError(TagEnum.TRACK, "Invalid scope.")
+          openedTags.addFirst(_tags[TagEnum.TRACK]!!)
           data.tracks.add(GPXDataTrack())
         }
-        "name" -> {
-          if (groups.size != 2)
-            continue
-          if (lastOpenedTag == "trk")
-            data.tracks.last().name = groups[1]!!.value
+        _tags[TagEnum.CLOSE_TRACK] -> {
+          if (openedTags.firstOrNull() != _tags[TagEnum.TRACK])
+            throw GPXParsingError(TagEnum.CLOSE_TRACK, "Invalid scope.")
+          openedTags.removeFirst()
         }
-        "trkseg" -> {
-          if (lastOpenedTag == "trk") {
-            data.tracks.last().segments.add(mutableListOf())
-            lastOpenedTag = "trkseg"
-          }
+        _tags[TagEnum.NAME] -> {
+          if (openedTags.firstOrNull() != _tags[TagEnum.TRACK])
+            throw GPXParsingError(TagEnum.NAME, "Invalid scope.")
+          val nameContent: String = groups["content"] ?: throw GPXParsingError(TagEnum.NAME, "Missing content.")
+          data.tracks.last().name = nameContent
         }
-        "trkpt" -> {
-          if (groups.size != 7)
-            continue
-          lastOpenedTag = "trkpt"
+        _tags[TagEnum.TRACK_SEGMENT] -> {
+          if (openedTags.firstOrNull() != _tags[TagEnum.TRACK])
+            throw GPXParsingError(TagEnum.TRACK_SEGMENT, "Invalid scope.")
+          data.tracks.last().segments.add(mutableListOf())
+          openedTags.addFirst(_tags[TagEnum.TRACK_SEGMENT]!!)
+        }
+        _tags[TagEnum.CLOSE_TRACK_SEGMENT] -> {
+          if (openedTags.firstOrNull() != _tags[TagEnum.TRACK_SEGMENT])
+            throw GPXParsingError(TagEnum.CLOSE_TRACK_SEGMENT, "Invalid scope.")
+          openedTags.removeFirst()
+        }
+        _tags[TagEnum.TRACK_POINT] -> {
+          if (openedTags.firstOrNull() != _tags[TagEnum.TRACK_SEGMENT])
+            throw GPXParsingError(TagEnum.TRACK_POINT, "Invalid scope.")
+          openedTags.addFirst(_tags[TagEnum.TRACK_POINT]!!)
           val loc = Location("")
-          loc.latitude = groups[2]!!.value.toDouble()
-          loc.longitude = groups[4]!!.value.toDouble()
-          loc.altitude = groups[6]!!.value.toDouble()
+          loc.latitude = groups["lat"]?.toDouble() ?: 0.0
+          loc.longitude = groups["lon"]?.toDouble() ?: 0.0
+          loc.altitude = groups["alt"]?.toDouble() ?: 0.0
           data.tracks.last().segments.last().add(loc)
         }
+        _tags[TagEnum.CLOSE_TRACK_POINT] -> {
+          if (openedTags.firstOrNull() != _tags[TagEnum.TRACK_POINT])
+            throw GPXParsingError(TagEnum.CLOSE_TRACK_POINT, "Invalid scope.")
+          openedTags.removeFirst()
+        }
+        else -> throw  GPXParsingError(TagEnum.GPX, "Unknown tag.")
       }
     }
     return data

@@ -11,7 +11,13 @@ class StatsActivity: AppCompatActivity() {
     super.onCreate(savedInstanceState)
 
     val filepath: String = intent.extras?.getString("filepath") ?: ""
-    val data = _gpxHelper.readFile(filepath)
-    Log.i("debug", data.toString())
+    try {
+      val data = _gpxHelper.readFile(filepath)
+      Log.i("debug", data.toString())
+    } catch (e: Exception) {
+      if (e is GPXParsingError) {
+        Log.i("debug", e.message!!)
+      }
+    }
   }
 }
