@@ -2,7 +2,6 @@ package griffith.baptiste.martinet.garmax
 
 import android.content.Context
 import android.location.Location
-import android.util.Log
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
@@ -18,7 +17,7 @@ class GPXHelper(private val context: Context) {
     var creator: String = ""
     var version: String = ""
     var metadata: GPXMetaData = GPXMetaData()
-    var tracks: MutableList<GPXDataTrack> = mutableListOf()
+    var tracks: MutableList<GPXTrack> = mutableListOf()
 
     override fun toString(): String {
       return "{ creator: $creator, version: $version, metadata: $metadata, tracks: $tracks }"
@@ -31,7 +30,7 @@ class GPXHelper(private val context: Context) {
       return "{ time: $time }"
     }
   }
-  class GPXDataTrack {
+  class GPXTrack {
     var name: String = ""
     var segments: MutableList<MutableList<Location>> = mutableListOf()
 
@@ -129,6 +128,14 @@ class GPXHelper(private val context: Context) {
     return true
   }
 
+  /*
+  * Explanation:
+  * Before regex: '<gpx creator="Baptiste Martinet" version="1.1">'
+  * After regex: '<(gpx) (creator)="(Baptiste Martinet)" (version)="(1.1)">'
+  * After mapping: [ ("tag", "gpx"), ("creator": "Baptiste Martinet"), ("version", "1.1") ]
+  * Once mapped, groups are really easy to use:
+  * Example: map["creator"] == "Baptiste Martinet"
+   */
   private fun createMapFromMatch(matchedResult: MatchResult): Map<String, String> {
     val groups = matchedResult.groups.filterIndexed { index, matchGroup -> (index != 0 && matchGroup != null) }
     val map = mutableMapOf<String, String>()
@@ -200,7 +207,7 @@ class GPXHelper(private val context: Context) {
           if (openedTags.firstOrNull() != _tags[TagEnum.GPX])
             throw GPXParsingError(TagEnum.TRACK, "Invalid scope.")
           openedTags.addFirst(_tags[TagEnum.TRACK]!!)
-          data.tracks.add(GPXDataTrack())
+          data.tracks.add(GPXTrack())
         }
         _tags[TagEnum.CLOSE_TRACK] -> {
           if (openedTags.firstOrNull() != _tags[TagEnum.TRACK])
@@ -239,7 +246,7 @@ class GPXHelper(private val context: Context) {
             throw GPXParsingError(TagEnum.CLOSE_TRACK_POINT, "Invalid scope.")
           openedTags.removeFirst()
         }
-        else -> throw  GPXParsingError(TagEnum.GPX, "Unknown tag.")
+        else -> throw GPXParsingError(TagEnum.GPX, "Unknown tag.")
       }
     }
     return data
