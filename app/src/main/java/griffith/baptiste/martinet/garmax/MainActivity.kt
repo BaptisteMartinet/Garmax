@@ -11,6 +11,7 @@ import androidx.core.app.ActivityCompat
 
 class MainActivity : AppCompatActivity() {
   private lateinit var _gpsHelper: GPSHelper
+  private lateinit var _gpxHelper: GPXHelper
   private lateinit var trackerBtn: Button
 
   override fun onCreate(savedInstanceState: Bundle?) {
@@ -18,6 +19,7 @@ class MainActivity : AppCompatActivity() {
     setContentView(R.layout.activity_main)
 
     _gpsHelper = GPSHelper(this)
+    _gpxHelper = GPXHelper(this)
 
     trackerBtn = findViewById(R.id.trackerBtn)
     trackerBtn.setOnClickListener {
@@ -27,8 +29,15 @@ class MainActivity : AppCompatActivity() {
 
   private fun switchTrackingMode() {
     if (_gpsHelper.isTracking()) {
-      val filepath = _gpsHelper.getCurrentFilePath()
-      _gpsHelper.stopTracking()
+      val filepath = _gpxHelper.getCurrentFilePath()
+      try {
+        _gpsHelper.stopTracking()
+        _gpxHelper.close()
+      } catch (e: Exception) {
+        // TODO display a Toast or something
+        Log.i("debug", "An exception has occurred: ${e.message}")
+        return
+      }
       trackerBtn.text = "start"
       val intent = Intent(this, StatsActivity::class.java)
       intent.putExtra("filepath", filepath)
@@ -40,8 +49,17 @@ class MainActivity : AppCompatActivity() {
       requestPermissions(arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION), 1)
       return
     }
-    if (!_gpsHelper.startTracking(5000, 0f))
+    try {
+      _gpxHelper.create()
+      _gpsHelper.startTracking(5000, 0f) { location ->
+        Log.i("debug", location.toString())
+        _gpxHelper.writeLocation(location)
+      }
+    } catch (e: Exception) {
+      // TODO display a Toast or something
+      Log.i("debug", "An exception has occurred: ${e.message}")
       return
+    }
     trackerBtn.text = "stop"
   }
 

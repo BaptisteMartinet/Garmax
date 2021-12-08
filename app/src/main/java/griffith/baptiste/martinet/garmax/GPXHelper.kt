@@ -74,30 +74,27 @@ class GPXHelper(private val context: Context) {
 
   fun getCurrentFilePath(): String? = _file?.absolutePath
 
-  fun create(): Boolean {
+  fun create() {
     if (_file != null)
-      return false
-    val externalStoragePath: File = context.getExternalFilesDir(null) ?: return false
+      throw Exception("A file is already open")
+    val externalStoragePath: File = context.getExternalFilesDir(null) ?: throw Exception("Could not get externalStoragePath")
     val currentDate: Date = Calendar.getInstance().time
     val fileName: String = _dateFormatter.format(currentDate)
 
     val dir = File(externalStoragePath, _directoryName)
     dir.mkdir() //create dir if not exist
     _file = File(dir, fileName + _extensionName) //create file
-    writeHeader(currentDate)
-    return true
+    this.writeHeader(currentDate)
   }
 
-  fun close(): Boolean {
+  fun close() {
     if (_file == null)
-      return false
-    if (!writeFooter())
-      return false
+      throw Exception("No file open")
+    this.writeFooter()
     _file = null
-    return true
   }
 
-  private fun writeHeader(date: Date): Boolean {
+  private fun writeHeader(date: Date) {
     val header: String =
       "<gpx creator=\"Baptiste Martinet\" version=\"1.1\">\n" +
           "<metadata>\n" +
@@ -106,26 +103,23 @@ class GPXHelper(private val context: Context) {
           "<trk>\n" +
           "<name>Garmax app GPX document</name>\n" +
           "<trkseg>\n"
-    _file?.appendText(header) ?: return false
-    return true
+    _file?.appendText(header) ?: throw Exception("Could not appendText")
   }
 
-  fun writeLocation(location: Location): Boolean {
+  fun writeLocation(location: Location) {
     val point =
       "<trkpt lat=\"${location.latitude}\" lon=\"${location.longitude}\" alt=\"${location.altitude}\">\n" +
           "<time>${_dateFormatter.format(Date(location.time))}</time>\n" +
           "</trkpt>\n"
-    _file?.appendText(point) ?: return false
-    return true
+    _file?.appendText(point) ?: throw Exception("Could not appendText")
   }
 
-  private fun writeFooter(): Boolean {
+  private fun writeFooter() {
     val footer: String =
       "</trkseg>\n" +
           "</trk>\n" +
           "</gpx>"
-    _file?.appendText(footer) ?: return false
-    return true
+    _file?.appendText(footer) ?: throw Exception("Could not appendText")
   }
 
   /*
