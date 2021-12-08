@@ -16,7 +16,6 @@
     android:padding="5dp">
 
     <ImageButton
-      android:id="@+id/imageButton"
       android:layout_width="48dp"
       android:layout_height="48dp"
       android:background="@android:color/transparent"
@@ -82,126 +81,6 @@
       app:layout_constraintTop_toBottomOf="@+id/lastUpdate" />
   </androidx.constraintlayout.widget.ConstraintLayout>
 
-  <!-- Circles -->
-  <androidx.constraintlayout.widget.ConstraintLayout
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:padding="10dp"
-    android:layout_marginTop="10dp">
 
-    <!-- Circle Blue -->
-
-    <ImageView
-      android:id="@+id/circleBlue"
-      android:layout_width="150dp"
-      android:layout_height="150dp"
-      android:src="@drawable/garmin_circle_blue"
-      app:layout_constraintBottom_toBottomOf="@+id/circleOrange"
-      app:layout_constraintEnd_toEndOf="@+id/circleOrange"
-      app:layout_constraintHorizontal_bias="0.1"
-      app:layout_constraintStart_toStartOf="parent"
-      app:layout_constraintTop_toTopOf="@+id/circleOrange"
-      app:layout_constraintVertical_bias="4"
-      tools:ignore="ContentDescription" />
-
-    <TextView
-      android:id="@+id/timeText"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:text="@string/time_placeholder"
-      android:textColor="@color/white"
-      android:textSize="30sp"
-      android:textStyle="bold"
-      app:layout_constraintBottom_toBottomOf="@+id/circleBlue"
-      app:layout_constraintEnd_toEndOf="@+id/circleBlue"
-      app:layout_constraintStart_toStartOf="@+id/circleBlue"
-      app:layout_constraintTop_toTopOf="@+id/circleBlue" />
-
-    <TextView
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:text="@string/time"
-      android:textColor="@color/garmin_text_grey"
-      android:textSize="14sp"
-      app:layout_constraintEnd_toEndOf="@+id/circleBlue"
-      app:layout_constraintStart_toStartOf="@+id/circleBlue"
-      app:layout_constraintTop_toBottomOf="@+id/timeText" />
-
-    <!-- Circle Green -->
-
-    <ImageView
-      android:id="@+id/circleGreen"
-      android:layout_width="150dp"
-      android:layout_height="150dp"
-      android:src="@drawable/garmin_circle_green"
-      app:layout_constraintBottom_toBottomOf="@+id/circleOrange"
-      app:layout_constraintEnd_toEndOf="parent"
-      app:layout_constraintHorizontal_bias="0.9"
-      app:layout_constraintStart_toStartOf="@+id/circleOrange"
-      app:layout_constraintTop_toTopOf="@+id/circleOrange"
-      app:layout_constraintVertical_bias="4"
-      tools:ignore="ContentDescription" />
-
-    <TextView
-      android:id="@+id/speedText"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:text="@string/speed_placeholder"
-      android:textColor="@color/white"
-      android:textSize="45sp"
-      android:textStyle="bold"
-      app:layout_constraintBottom_toBottomOf="@+id/circleGreen"
-      app:layout_constraintEnd_toEndOf="@+id/circleGreen"
-      app:layout_constraintStart_toStartOf="@+id/circleGreen"
-      app:layout_constraintTop_toTopOf="@+id/circleGreen" />
-
-    <TextView
-      android:id="@+id/textView2"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:text="@string/speed"
-      android:textColor="@color/garmin_text_grey"
-      android:textSize="14sp"
-      app:layout_constraintEnd_toEndOf="@+id/circleGreen"
-      app:layout_constraintStart_toStartOf="@+id/circleGreen"
-      app:layout_constraintTop_toBottomOf="@+id/speedText" />
-
-    <!-- Circle Orange -->
-
-    <ImageView
-      android:id="@+id/circleOrange"
-      android:layout_width="180dp"
-      android:layout_height="180dp"
-      android:src="@drawable/garmin_circle_orange"
-      app:layout_constraintEnd_toEndOf="parent"
-      app:layout_constraintStart_toStartOf="parent"
-      app:layout_constraintTop_toTopOf="parent"
-      tools:ignore="ContentDescription" />
-
-    <TextView
-      android:id="@+id/distanceText"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:text="@string/distance_placeholder"
-      android:textStyle="bold"
-      android:textSize="50sp"
-      android:textColor="@color/white"
-      app:layout_constraintBottom_toBottomOf="@+id/circleOrange"
-      app:layout_constraintEnd_toEndOf="@+id/circleOrange"
-      app:layout_constraintStart_toStartOf="@+id/circleOrange"
-      app:layout_constraintTop_toTopOf="@+id/circleOrange" />
-
-    <TextView
-      android:id="@+id/textView"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:text="@string/distance"
-      android:textColor="@color/garmin_text_grey"
-      android:textSize="15sp"
-      app:layout_constraintEnd_toEndOf="@+id/circleOrange"
-      app:layout_constraintStart_toStartOf="@+id/circleOrange"
-      app:layout_constraintTop_toBottomOf="@+id/distanceText" />
-
-  </androidx.constraintlayout.widget.ConstraintLayout>
 
 </LinearLayout>

@@ -2,6 +2,7 @@ package griffith.baptiste.martinet.garmax
 
 import android.content.Context
 import android.location.Location
+import android.location.LocationManager
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
@@ -229,7 +230,7 @@ class GPXHelper(private val context: Context) {
           if (openedTags.firstOrNull() != _tags[TagEnum.TRACK_SEGMENT])
             throw GPXParsingError(TagEnum.TRACK_POINT, "Invalid scope.")
           openedTags.addFirst(_tags[TagEnum.TRACK_POINT]!!)
-          val loc = Location("")
+          val loc = Location(LocationManager.GPS_PROVIDER)
           loc.latitude = groups["lat"]?.toDouble() ?: 0.0
           loc.longitude = groups["lon"]?.toDouble() ?: 0.0
           loc.altitude = groups["alt"]?.toDouble() ?: 0.0

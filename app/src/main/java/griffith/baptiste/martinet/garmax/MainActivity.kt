@@ -3,16 +3,23 @@ package griffith.baptiste.martinet.garmax
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.location.Location
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
+import android.widget.TextView
 import androidx.core.app.ActivityCompat
 
 class MainActivity : AppCompatActivity() {
   private lateinit var _gpsHelper: GPSHelper
   private lateinit var _gpxHelper: GPXHelper
+  private val _recordedLocations: MutableList<Location> = mutableListOf()
+
   private lateinit var trackerBtn: Button
+  private lateinit var distanceText: TextView
+  private lateinit var timeText: TextView
+  private lateinit var speedText: TextView
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -25,6 +32,10 @@ class MainActivity : AppCompatActivity() {
     trackerBtn.setOnClickListener {
       switchTrackingMode()
     }
+    //circles
+    distanceText = findViewById(R.id.distanceText)
+    timeText = findViewById(R.id.timeText)
+    speedText = findViewById(R.id.speedText)
   }
 
   private fun switchTrackingMode() {
@@ -52,8 +63,9 @@ class MainActivity : AppCompatActivity() {
     try {
       _gpxHelper.create()
       _gpsHelper.startTracking(5000, 0f) { location ->
-        Log.i("debug", location.toString())
         _gpxHelper.writeLocation(location)
+        _recordedLocations.add(location)
+        updateLiveData()
       }
     } catch (e: Exception) {
       // TODO display a Toast or something
@@ -72,5 +84,16 @@ class MainActivity : AppCompatActivity() {
         switchTrackingMode()
       }
     }
+  }
+
+  private fun updateLiveData() {
+    val nbRecordedLocations = _recordedLocations.size
+    if (nbRecordedLocations < 2)
+      return
+    val trackDuration = LocationHelper.timeBetweenLocations(_recordedLocations.first(), _recordedLocations.last())
+    //circles
+    distanceText.text = "%.2f".format(LocationHelper.distanceBetweenLocations(_recordedLocations) / 1000)
+    timeText.text = "%d:%d:%d".format(trackDuration.getHours(), trackDuration.getMinutes() % 60, trackDuration.getSeconds() % 60)
+    speedText.text = "%.2f".format(LocationHelper.speedBetweenLocations(_recordedLocations[nbRecordedLocations - 2], _recordedLocations[nbRecordedLocations - 1]))
   }
 }
