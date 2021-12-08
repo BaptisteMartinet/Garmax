@@ -24,6 +24,7 @@ class GPXHelper(private val context: Context) {
       return "{ creator: $creator, version: $version, metadata: $metadata, tracks: $tracks }"
     }
   }
+
   class GPXMetaData {
     var time: String = ""
 
@@ -31,6 +32,7 @@ class GPXHelper(private val context: Context) {
       return "{ time: $time }"
     }
   }
+
   class GPXTrack {
     var name: String = ""
     var segments: MutableList<MutableList<Location>> = mutableListOf()
@@ -39,6 +41,7 @@ class GPXHelper(private val context: Context) {
       return "{ name: $name, segments: $segments }"
     }
   }
+
   enum class TagEnum {
     GPX,
     CLOSE_GPX,
@@ -52,7 +55,9 @@ class GPXHelper(private val context: Context) {
     CLOSE_TRACK_POINT,
     TIME,
     NAME,
+    ELEVATION,
   }
+
   private val _tags = mapOf(
     TagEnum.GPX to "gpx",
     TagEnum.CLOSE_GPX to "/gpx",
@@ -66,6 +71,7 @@ class GPXHelper(private val context: Context) {
     TagEnum.CLOSE_TRACK_POINT to "/trkpt",
     TagEnum.TIME to "time",
     TagEnum.NAME to "name",
+    TagEnum.ELEVATION to "ele",
   )
 
   private var _file: File? = null
@@ -109,8 +115,9 @@ class GPXHelper(private val context: Context) {
 
   fun writeLocation(location: Location) {
     val point =
-      "<trkpt lat=\"${location.latitude}\" lon=\"${location.longitude}\" alt=\"${location.altitude}\">\n" +
+      "<trkpt lat=\"${location.latitude}\" lon=\"${location.longitude}\">\n" +
           "<time>${_dateFormatter.format(Date(location.time))}</time>\n" +
+          "<ele>${location.altitude}</ele>\n" +
           "</trkpt>\n"
     _file?.appendText(point) ?: throw Exception("Could not appendText")
   }
@@ -233,8 +240,12 @@ class GPXHelper(private val context: Context) {
           val loc = Location(LocationManager.GPS_PROVIDER)
           loc.latitude = groups["lat"]?.toDouble() ?: 0.0
           loc.longitude = groups["lon"]?.toDouble() ?: 0.0
-          loc.altitude = groups["alt"]?.toDouble() ?: 0.0
           data.tracks.last().segments.last().add(loc)
+        }
+        _tags[TagEnum.ELEVATION] -> {
+          if (openedTags.firstOrNull() != _tags[TagEnum.TRACK_POINT])
+            throw GPXParsingError(TagEnum.ELEVATION, "Invalid scope.")
+          data.tracks.last().segments.last().last().altitude = groups["content"]?.toDouble() ?: 0.0
         }
         _tags[TagEnum.CLOSE_TRACK_POINT] -> {
           if (openedTags.firstOrNull() != _tags[TagEnum.TRACK_POINT])
