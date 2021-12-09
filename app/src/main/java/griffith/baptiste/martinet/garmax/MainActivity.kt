@@ -17,9 +17,9 @@ class MainActivity : AppCompatActivity() {
   private val _recordedLocations: MutableList<Location> = mutableListOf()
 
   private lateinit var trackerBtn: Button
-  private lateinit var distanceText: TextView
-  private lateinit var timeText: TextView
-  private lateinit var speedText: TextView
+  private lateinit var liveDistanceText: TextView
+  private lateinit var liveTimeText: TextView
+  private lateinit var liveSpeedText: TextView
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -33,9 +33,9 @@ class MainActivity : AppCompatActivity() {
       switchTrackingMode()
     }
     //circles
-    distanceText = findViewById(R.id.distanceText)
-    timeText = findViewById(R.id.timeText)
-    speedText = findViewById(R.id.speedText)
+    liveDistanceText = findViewById(R.id.liveDistanceText)
+    liveTimeText = findViewById(R.id.liveTimeText)
+    liveSpeedText = findViewById(R.id.liveSpeedText)
   }
 
   private fun switchTrackingMode() {
@@ -92,8 +92,8 @@ class MainActivity : AppCompatActivity() {
       return
     val trackDuration = LocationHelper.timeBetweenLocations(_recordedLocations.first(), _recordedLocations.last())
     //circles
-    distanceText.text = "%.2f".format(LocationHelper.distanceBetweenLocations(_recordedLocations) / 1000)
-    timeText.text = "%d:%d:%d".format(trackDuration.getHours(), trackDuration.getMinutes() % 60, trackDuration.getSeconds() % 60)
-    speedText.text = "%.2f".format(LocationHelper.speedBetweenLocations(_recordedLocations[nbRecordedLocations - 2], _recordedLocations[nbRecordedLocations - 1]))
+    liveDistanceText.text = "%.2f".format(LocationHelper.distanceBetweenLocations(_recordedLocations) / 1000)
+    liveTimeText.text = "%d:%d:%d".format(trackDuration.getHours(), trackDuration.getMinutes() % 60, trackDuration.getSeconds() % 60)
+    liveSpeedText.text = "%.2f".format(LocationHelper.speedBetweenLocations(_recordedLocations[nbRecordedLocations - 2], _recordedLocations[nbRecordedLocations - 1]))
   }
 }

@@ -62,7 +62,7 @@
       tools:ignore="ContentDescription" />
 
     <TextView
-      android:id="@+id/timeText"
+      android:id="@+id/liveTimeText"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:text="@string/time_placeholder"
@@ -82,7 +82,7 @@
       android:textSize="14sp"
       app:layout_constraintEnd_toEndOf="@+id/circleBlue"
       app:layout_constraintStart_toStartOf="@+id/circleBlue"
-      app:layout_constraintTop_toBottomOf="@+id/timeText" />
+      app:layout_constraintTop_toBottomOf="@+id/liveTimeText" />
 
     <!-- Circle Green -->
 
@@ -100,7 +100,7 @@
       tools:ignore="ContentDescription" />
 
     <TextView
-      android:id="@+id/speedText"
+      android:id="@+id/liveSpeedText"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:text="@string/speed_placeholder"
@@ -113,7 +113,6 @@
       app:layout_constraintTop_toTopOf="@+id/circleGreen" />
 
     <TextView
-      android:id="@+id/textView2"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:text="@string/speed"
@@ -121,7 +120,7 @@
       android:textSize="14sp"
       app:layout_constraintEnd_toEndOf="@+id/circleGreen"
       app:layout_constraintStart_toStartOf="@+id/circleGreen"
-      app:layout_constraintTop_toBottomOf="@+id/speedText" />
+      app:layout_constraintTop_toBottomOf="@+id/liveSpeedText" />
 
     <!-- Circle Orange -->
 
@@ -136,7 +135,7 @@
       tools:ignore="ContentDescription" />
 
     <TextView
-      android:id="@+id/distanceText"
+      android:id="@+id/liveDistanceText"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:text="@string/distance_placeholder"
@@ -149,7 +148,6 @@
       app:layout_constraintTop_toTopOf="@+id/circleOrange" />
 
     <TextView
-      android:id="@+id/textView"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:text="@string/distance"
@@ -157,7 +155,7 @@
       android:textSize="15sp"
       app:layout_constraintEnd_toEndOf="@+id/circleOrange"
       app:layout_constraintStart_toStartOf="@+id/circleOrange"
-      app:layout_constraintTop_toBottomOf="@+id/distanceText" />
+      app:layout_constraintTop_toBottomOf="@+id/liveDistanceText" />
 
   </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -2,11 +2,11 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
   xmlns:app="http://schemas.android.com/apk/res-auto"
   xmlns:tools="http://schemas.android.com/tools"
-  tools:context=".StatsActivity"
   android:layout_width="match_parent"
   android:layout_height="match_parent"
+  android:background="@color/garmin_grey_background"
   android:orientation="vertical"
-  android:background="@color/garmin_grey_background">
+  tools:context=".StatsActivity">
 
   <!-- HEADER -->
   <androidx.constraintlayout.widget.ConstraintLayout
@@ -81,6 +81,72 @@
       app:layout_constraintTop_toBottomOf="@+id/lastUpdate" />
   </androidx.constraintlayout.widget.ConstraintLayout>
 
+  <!-- Track data -->
+  <LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="10dp">
 
+    <!-- card 1 -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:padding="12dp">
 
+      <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="120dp"
+        android:src="@drawable/stat_card"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="ContentDescription" />
+
+      <ImageView
+        android:id="@+id/statCardHeader1"
+        android:layout_width="match_parent"
+        android:layout_height="30dp"
+        android:src="@drawable/stat_card_header"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="ContentDescription" />
+
+      <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:text="@string/distance"
+        android:textColor="@color/white"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toBottomOf="@+id/statCardHeader1"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+      <ImageView
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_marginEnd="10dp"
+        android:src="@drawable/ic_baseline_bar_chart_24"
+        app:layout_constraintBottom_toBottomOf="@+id/statCardHeader1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="ContentDescription" />
+
+      <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/distance_placeholder"
+        android:textStyle="bold"
+        android:textColor="@color/garmin_orange"
+        android:textSize="50sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/statCardHeader1" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+  </LinearLayout>
 </LinearLayout>
