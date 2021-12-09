@@ -3,10 +3,12 @@
   <string name="tack_name_placeholder">Morning ride</string>
   <string name="date_placeholder">07/12/2021</string>
   <string name="time_pm_placeholder">5:12 PM</string>
-  <string name="distance_placeholder">19.17</string>
-  <string name="speed_placeholder">20.5</string>
-  <string name="time_placeholder">56:06:20</string>
+  <string name="distance_placeholder">0.0</string>
+  <string name="speed_placeholder">0.0</string>
+  <string name="time_placeholder">00:00:00</string>
+  <string name="track_point_placeholder">%d trkpt</string>
 
+  <string name="live_data"><u>Live data</u></string>
   <string name="last_update">Last update</string>
   <string name="distance">Distance (km)</string>
   <string name="speed">Speed (m/h)</string>

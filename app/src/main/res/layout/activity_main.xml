@@ -44,7 +44,30 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginTop="10dp"
-    android:padding="20dp">
+    android:padding="5dp">
+
+    <TextView
+      android:id="@+id/liveData"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:padding="5dp"
+      android:text="@string/live_data"
+      android:textColor="@color/garmin_text_white"
+      android:textSize="15sp"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+      android:id="@+id/trackPointsText"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:text="@string/track_point_placeholder"
+      android:textColor="@color/garmin_text_grey"
+      android:textSize="11sp"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toBottomOf="@+id/liveData"
+      android:padding="2dp"
+      android:layout_marginStart="2dp"/>
 
     <!-- Circle Blue -->
 
@@ -132,7 +155,8 @@
       app:layout_constraintEnd_toEndOf="parent"
       app:layout_constraintStart_toStartOf="parent"
       app:layout_constraintTop_toTopOf="parent"
-      tools:ignore="ContentDescription" />
+      tools:ignore="ContentDescription"
+      android:layout_marginTop="20dp"/>
 
     <TextView
       android:id="@+id/liveDistanceText"

@@ -1,8 +1,11 @@
 package griffith.baptiste.martinet.garmax
 
+import android.content.Intent
 import android.location.Location
 import android.os.Bundle
 import android.util.Log
+import android.widget.Button
+import android.widget.ImageButton
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import java.text.SimpleDateFormat
@@ -14,6 +17,12 @@ class StatsActivity: AppCompatActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.activity_stats)
+
+    val backBtn = findViewById<ImageButton>(R.id.backBtn)
+    backBtn.setOnClickListener {
+      val intent = Intent(this, MainActivity::class.java)
+      startActivity(intent)
+    }
 
     val filepath: String = intent.extras?.getString("filepath") ?: ""
     val data: GPXHelper.GPXData

@@ -9,7 +9,9 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.Button
 import android.widget.TextView
+import android.widget.Toast
 import androidx.core.app.ActivityCompat
+import java.text.DecimalFormat
 
 class MainActivity : AppCompatActivity() {
   private lateinit var _gpsHelper: GPSHelper
@@ -20,6 +22,7 @@ class MainActivity : AppCompatActivity() {
   private lateinit var liveDistanceText: TextView
   private lateinit var liveTimeText: TextView
   private lateinit var liveSpeedText: TextView
+  private lateinit var trackPointsText: TextView
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -32,6 +35,9 @@ class MainActivity : AppCompatActivity() {
     trackerBtn.setOnClickListener {
       switchTrackingMode()
     }
+    //live data
+    trackPointsText = findViewById(R.id.trackPointsText)
+    trackPointsText.text = getString(R.string.track_point_placeholder).format(0)
     //circles
     liveDistanceText = findViewById(R.id.liveDistanceText)
     liveTimeText = findViewById(R.id.liveTimeText)
@@ -45,8 +51,7 @@ class MainActivity : AppCompatActivity() {
         _gpsHelper.stopTracking()
         _gpxHelper.close()
       } catch (e: Exception) {
-        // TODO display a Toast or something
-        Log.i("debug", "An exception has occurred: ${e.message}")
+        Toast.makeText(this, "An error occurred while trying to stop the tracking", Toast.LENGTH_SHORT).show()
         return
       }
       trackerBtn.text = "start"
@@ -68,8 +73,7 @@ class MainActivity : AppCompatActivity() {
         updateLiveData()
       }
     } catch (e: Exception) {
-      // TODO display a Toast or something
-      Log.i("debug", "An exception has occurred: ${e.message}")
+      Toast.makeText(this, "An error occurred while trying to start the tracking", Toast.LENGTH_SHORT).show()
       return
     }
     trackerBtn.text = "stop"
@@ -88,12 +92,15 @@ class MainActivity : AppCompatActivity() {
 
   private fun updateLiveData() {
     val nbRecordedLocations = _recordedLocations.size
+    //live data
+    trackPointsText.text = getString(R.string.track_point_placeholder).format(nbRecordedLocations)
     if (nbRecordedLocations < 2)
       return
     val trackDuration = LocationHelper.timeBetweenLocations(_recordedLocations.first(), _recordedLocations.last())
+    val decimalFormat = DecimalFormat("00")
     //circles
     liveDistanceText.text = "%.2f".format(LocationHelper.distanceBetweenLocations(_recordedLocations) / 1000)
-    liveTimeText.text = "%d:%d:%d".format(trackDuration.getHours(), trackDuration.getMinutes() % 60, trackDuration.getSeconds() % 60)
+    liveTimeText.text = "%s:%s:%s".format(decimalFormat.format(trackDuration.getHours()), decimalFormat.format(trackDuration.getMinutes() % 60), decimalFormat.format(trackDuration.getSeconds() % 60))
     liveSpeedText.text = "%.2f".format(LocationHelper.speedBetweenLocations(_recordedLocations[nbRecordedLocations - 2], _recordedLocations[nbRecordedLocations - 1]))
   }
 }
