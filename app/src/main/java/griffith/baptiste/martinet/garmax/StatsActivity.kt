@@ -7,11 +7,13 @@ import android.util.Log
 import android.widget.ImageButton
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import java.text.DecimalFormat
 import java.text.SimpleDateFormat
 import java.util.*
 
 class StatsActivity: AppCompatActivity() {
   private val _gpxHelper = GPXHelper(this)
+  private val _decimalFormatter = DecimalFormat("00")
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -47,9 +49,26 @@ class StatsActivity: AppCompatActivity() {
     val trackDateText = findViewById<TextView>(R.id.trackDateText)
     val lastUpdateTimeText = findViewById<TextView>(R.id.lastUpdateTimeText)
 
-    //basic track info
     trackNameText.text = mainTrack.name
     trackDateText.text = dateFormatter.format(dateFormatterTZ.parse(data.metadata.time)!!)
     lastUpdateTimeText.text = timeFormatterPM.format(currentTime)
+
+    //cards
+    val distanceText = findViewById<TextView>(R.id.distanceText)
+    val speedText = findViewById<TextView>(R.id.speedText)
+    val timeText = findViewById<TextView>(R.id.timeText)
+    val altitudeAverageText = findViewById<TextView>(R.id.altitudeAverageText)
+    val altitudeMinText = findViewById<TextView>(R.id.altitudeMinText)
+    val altitudeMaxText = findViewById<TextView>(R.id.altitudeMaxText)
+
+    val segmentDuration = LocationHelper.timeBetweenLocations(mainSegment.first(), mainSegment.last())
+    val altitudeInfo = LocationHelper.altitudeWithinLocations(mainSegment)
+
+    distanceText.text = getString(R.string.distance_placeholder).format(LocationHelper.distanceBetweenLocations(mainSegment) / 1000)
+    speedText.text = getString(R.string.speed_placeholder).format(LocationHelper.speedAverageBetweenLocations(mainSegment))
+    timeText.text = segmentDuration.toFormattedString(_decimalFormatter)
+    altitudeAverageText.text = getString(R.string.altitude_average_placeholder).format(altitudeInfo.average)
+    altitudeMinText.text = getString(R.string.altitude_min_placeholder).format(altitudeInfo.min)
+    altitudeMaxText.text = getString(R.string.altitude_max_placeholder).format(altitudeInfo.max)
   }
 }

@@ -1,6 +1,9 @@
 package griffith.baptiste.martinet.garmax
 
 import android.location.Location
+import java.text.DecimalFormat
+import kotlin.math.max
+import kotlin.math.min
 
 class LocationHelper {
   class LocationHelperTime(private val _milliseconds: Long) {
@@ -8,6 +11,14 @@ class LocationHelper {
     fun getSeconds(): Long { return _milliseconds / 1000 }
     fun getMinutes(): Long { return  getSeconds() / 60  }
     fun getHours(): Long { return getMinutes() / 60 }
+    fun toFormattedString(decimalFormat: DecimalFormat): String {
+      return "${decimalFormat.format(getHours() % 24)}:${decimalFormat.format(getMinutes() % 60)}:${decimalFormat.format(getSeconds() % 60)}"
+    }
+  }
+  class LocationHelperAltitude {
+    var average: Double = 0.0
+    var min: Double = 0.0
+    var max: Double = 0.0
   }
 
   companion object {
@@ -42,6 +53,21 @@ class LocationHelper {
 
     fun timeBetweenLocations(loc1: Location, loc2: Location): LocationHelperTime {
       return LocationHelperTime(loc2.time - loc1.time)
+    }
+
+    fun altitudeWithinLocations(locations: List<Location>): LocationHelperAltitude {
+      val alt = LocationHelperAltitude()
+      if (locations.isEmpty())
+        return alt
+      for (loc in locations) {
+        alt.average += loc.altitude
+        if (loc.altitude < alt.min)
+          alt.min = loc.altitude
+        else if (loc.altitude > alt.max)
+          alt.max = loc.altitude
+      }
+      alt.average /= locations.size
+      return alt
     }
   }
 }

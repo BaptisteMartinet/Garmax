@@ -104,7 +104,7 @@ class MainActivity : AppCompatActivity() {
     val trackDuration = LocationHelper.timeBetweenLocations(_recordedLocations.first(), _recordedLocations.last())
     //circles
     liveDistanceText.text = getString(R.string.distance_placeholder).format(LocationHelper.distanceBetweenLocations(_recordedLocations) / 1000)
-    liveTimeText.text = getString(R.string.time_placeholder).format(_decimalFormatter.format(trackDuration.getHours()), _decimalFormatter.format(trackDuration.getMinutes() % 60), _decimalFormatter.format(trackDuration.getSeconds() % 60))
+    liveTimeText.text = trackDuration.toFormattedString(_decimalFormatter)
     liveSpeedText.text = getString(R.string.speed_placeholder).format(LocationHelper.speedBetweenLocations(_recordedLocations[nbRecordedLocations - 2], _recordedLocations[nbRecordedLocations - 1]))
   }
 }

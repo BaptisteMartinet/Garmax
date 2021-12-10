@@ -103,7 +103,7 @@ class GPXHelper(private val context: Context) {
 
   private fun writeHeader(date: Date) {
     val header: String =
-      "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\" ?>" +
+      "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\" ?>\n" +
           "<gpx creator=\"Baptiste Martinet\" version=\"1.1\">\n" +
           "<metadata>\n" +
           "<time>${_dateFormatter.format(date)}</time>\n" +

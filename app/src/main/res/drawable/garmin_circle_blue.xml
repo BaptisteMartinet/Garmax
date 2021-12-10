@@ -5,7 +5,7 @@
   <solid android:color="@color/garmin_dark_grey" />
   <stroke
     android:width="2dp"
-    android:color="@color/garmin_blue2"/>
+    android:color="@color/garmin_blue"/>
   <size
     android:width="200dp"
     android:height="200dp"/>
