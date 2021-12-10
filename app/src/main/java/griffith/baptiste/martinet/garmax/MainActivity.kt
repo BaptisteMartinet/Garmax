@@ -7,7 +7,7 @@ import android.location.Location
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import android.widget.Button
+import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
@@ -17,8 +17,9 @@ class MainActivity : AppCompatActivity() {
   private lateinit var _gpsHelper: GPSHelper
   private lateinit var _gpxHelper: GPXHelper
   private val _recordedLocations: MutableList<Location> = mutableListOf()
+  private val _decimalFormatter = DecimalFormat("00")
 
-  private lateinit var trackerBtn: Button
+  private lateinit var trackerBtn: ImageButton
   private lateinit var liveDistanceText: TextView
   private lateinit var liveTimeText: TextView
   private lateinit var liveSpeedText: TextView
@@ -42,6 +43,10 @@ class MainActivity : AppCompatActivity() {
     liveDistanceText = findViewById(R.id.liveDistanceText)
     liveTimeText = findViewById(R.id.liveTimeText)
     liveSpeedText = findViewById(R.id.liveSpeedText)
+
+    liveDistanceText.text = getString(R.string.distance_placeholder).format(0f)
+    liveTimeText.text = getString(R.string.time_placeholder).format(_decimalFormatter.format(0), _decimalFormatter.format(0), _decimalFormatter.format(0))
+    liveSpeedText.text = getString(R.string.speed_placeholder).format(0f)
   }
 
   private fun switchTrackingMode() {
@@ -54,7 +59,7 @@ class MainActivity : AppCompatActivity() {
         Toast.makeText(this, "An error occurred while trying to stop the tracking", Toast.LENGTH_SHORT).show()
         return
       }
-      trackerBtn.text = "start"
+      trackerBtn.setImageResource(R.drawable.ic_baseline_play_circle_outline_24)
       val intent = Intent(this, StatsActivity::class.java)
       intent.putExtra("filepath", filepath)
       startActivity(intent)
@@ -76,7 +81,7 @@ class MainActivity : AppCompatActivity() {
       Toast.makeText(this, "An error occurred while trying to start the tracking", Toast.LENGTH_SHORT).show()
       return
     }
-    trackerBtn.text = "stop"
+    trackerBtn.setImageResource(R.drawable.ic_baseline_pause_circle_outline_24)
   }
 
   override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
@@ -97,10 +102,9 @@ class MainActivity : AppCompatActivity() {
     if (nbRecordedLocations < 2)
       return
     val trackDuration = LocationHelper.timeBetweenLocations(_recordedLocations.first(), _recordedLocations.last())
-    val decimalFormat = DecimalFormat("00")
     //circles
-    liveDistanceText.text = "%.2f".format(LocationHelper.distanceBetweenLocations(_recordedLocations) / 1000)
-    liveTimeText.text = "%s:%s:%s".format(decimalFormat.format(trackDuration.getHours()), decimalFormat.format(trackDuration.getMinutes() % 60), decimalFormat.format(trackDuration.getSeconds() % 60))
-    liveSpeedText.text = "%.2f".format(LocationHelper.speedBetweenLocations(_recordedLocations[nbRecordedLocations - 2], _recordedLocations[nbRecordedLocations - 1]))
+    liveDistanceText.text = getString(R.string.distance_placeholder).format(LocationHelper.distanceBetweenLocations(_recordedLocations) / 1000)
+    liveTimeText.text = getString(R.string.time_placeholder).format(_decimalFormatter.format(trackDuration.getHours()), _decimalFormatter.format(trackDuration.getMinutes() % 60), _decimalFormatter.format(trackDuration.getSeconds() % 60))
+    liveSpeedText.text = getString(R.string.speed_placeholder).format(LocationHelper.speedBetweenLocations(_recordedLocations[nbRecordedLocations - 2], _recordedLocations[nbRecordedLocations - 1]))
   }
 }

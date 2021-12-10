@@ -13,19 +13,19 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@color/garmin_black"
-    android:padding="5dp">
+    android:padding="6dp">
 
     <ImageButton
       android:layout_width="48dp"
       android:layout_height="48dp"
       android:background="@android:color/transparent"
       android:scaleType="fitCenter"
-      android:src="@drawable/ic_baseline_home_24"
+      android:src="@drawable/professor"
       app:layout_constraintBottom_toBottomOf="parent"
+      app:layout_constraintEnd_toEndOf="parent"
       app:layout_constraintStart_toStartOf="parent"
       app:layout_constraintTop_toTopOf="parent"
-      app:layout_constraintEnd_toEndOf="parent"
-      tools:ignore="ContentDescription" />
+      tools:ignore="ContentDescription,SpeakableTextPresentCheck" />
 
     <ImageButton
       android:layout_width="48dp"
@@ -36,14 +36,14 @@
       app:layout_constraintBottom_toBottomOf="parent"
       app:layout_constraintEnd_toEndOf="parent"
       app:layout_constraintTop_toTopOf="parent"
-      tools:ignore="ContentDescription" />
+      tools:ignore="ContentDescription,SpeakableTextPresentCheck" />
   </androidx.constraintlayout.widget.ConstraintLayout>
 
   <!-- Circles -->
   <androidx.constraintlayout.widget.ConstraintLayout
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginTop="10dp"
+    android:layout_marginTop="20dp"
     android:padding="5dp">
 
     <TextView
@@ -53,7 +53,7 @@
       android:padding="5dp"
       android:text="@string/live_data"
       android:textColor="@color/garmin_text_white"
-      android:textSize="15sp"
+      android:textSize="18sp"
       app:layout_constraintStart_toStartOf="parent"
       app:layout_constraintTop_toTopOf="parent" />
 
@@ -63,7 +63,7 @@
       android:layout_height="wrap_content"
       android:text="@string/track_point_placeholder"
       android:textColor="@color/garmin_text_grey"
-      android:textSize="11sp"
+      android:textSize="12sp"
       app:layout_constraintStart_toStartOf="parent"
       app:layout_constraintTop_toBottomOf="@+id/liveData"
       android:padding="2dp"
@@ -181,12 +181,17 @@
       app:layout_constraintStart_toStartOf="@+id/circleOrange"
       app:layout_constraintTop_toBottomOf="@+id/liveDistanceText" />
 
+    <ImageButton
+      android:id="@+id/trackerBtn"
+      android:layout_width="80dp"
+      android:layout_height="80dp"
+      android:layout_gravity="center"
+      android:background="@android:color/transparent"
+      android:scaleType="fitCenter"
+      android:src="@drawable/ic_baseline_play_circle_outline_24"
+      app:layout_constraintBottom_toBottomOf="parent"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      tools:ignore="ContentDescription,SpeakableTextPresentCheck" />
   </androidx.constraintlayout.widget.ConstraintLayout>
-
-  <Button
-    android:id="@+id/trackerBtn"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:text="Start"
-    android:textSize="30sp" />
 </LinearLayout>

@@ -7,6 +7,7 @@
   <color name="teal_700">#FF018786</color>
   <color name="black">#FF000000</color>
   <color name="white">#FFFFFFFF</color>
+  <color name="white_low_opacity">#1BFFFFFF</color>
 
   <color name="garmin_blue">#0fa2e3</color>
   <color name="garmin_black">#0c0c0c</color>
@@ -18,5 +19,5 @@
   <color name="garmin_green">#0cd123</color>
 
   <color name="garmin_text_white">#b4b4b4</color>
-  <color name="garmin_text_grey">#7C7C7C</color>
+  <color name="garmin_text_grey">#868686</color>
 </resources>
