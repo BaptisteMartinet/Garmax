@@ -43,7 +43,7 @@
   <androidx.constraintlayout.widget.ConstraintLayout
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginTop="20dp"
+    android:layout_marginTop="10dp"
     android:padding="5dp">
 
     <TextView
@@ -203,6 +203,9 @@
     app:axis_abscissa_name="Time (h)"
     app:axis_ordinate_name="Speed (m/s)"
     app:axis_stroke_width="4"
-    app:line_color="@color/garmin_blue"
-    app:point_color="@color/garmin_blue" />
+    app:line_color="@color/garmin_green"
+    app:point_color="@color/garmin_green"
+    app:axis_abscissa_range_min="0"
+    app:axis_abscissa_range_max="24"
+    app:axis_abscissa_step="2" />
 </LinearLayout>

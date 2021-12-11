@@ -41,7 +41,8 @@ class StatsActivity: AppCompatActivity() {
     }
     val dateFormatterTZ = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ", Locale.UK)
     val dateFormatter = SimpleDateFormat("dd/MM/yyyy", Locale.UK)
-    val timeFormatterPM = SimpleDateFormat("HH:mm 'PM'", Locale.UK)
+
+    val timeFormatterPM = SimpleDateFormat("HH:mm a", Locale.UK)
     val currentTime = Calendar.getInstance().time
 
     //basic track info

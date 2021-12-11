@@ -25,6 +25,7 @@ class MainActivity : AppCompatActivity() {
   private lateinit var liveTimeText: TextView
   private lateinit var liveSpeedText: TextView
   private lateinit var trackPointsText: TextView
+  private lateinit var graphView: Graph
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -49,11 +50,7 @@ class MainActivity : AppCompatActivity() {
     liveTimeText.text = getString(R.string.time_placeholder).format(_decimalFormatter.format(0), _decimalFormatter.format(0), _decimalFormatter.format(0))
     liveSpeedText.text = getString(R.string.speed_placeholder).format(0f)
 
-    val graph = findViewById<Graph>(R.id.liveSpeedGraph)
-    graph.loadPoint(PointF(0f, 0f))
-    graph.loadPoint(PointF(2f, 1f))
-    graph.loadPoint(PointF(5f, 5f))
-    graph.loadPoint(PointF(10f, 10f))
+    graphView = findViewById(R.id.liveSpeedGraph)
   }
 
   private fun switchTrackingMode() {
@@ -82,6 +79,7 @@ class MainActivity : AppCompatActivity() {
       _gpsHelper.startTracking(5000, 0f) { location ->
         _gpxHelper.writeLocation(location)
         _recordedLocations.add(location)
+        graphView.loadPoint(PointF(location.time.toFloat(), location.speed)) // TODO convert time correctly on a 24 hour scale
         updateLiveData()
       }
     } catch (e: Exception) {
