@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <declare-styleable name="Graph">
+    //axis
+    <attr name="axis_abscissa_name" format="string"/>
+    <attr name="axis_ordinate_name" format="string"/>
+    <attr name="axis_color" format="color"/>
+    <attr name="axis_stroke_width" format="float"/>
+
+    <attr name="axis_abscissa_range_min" format="float"/>
+    <attr name="axis_abscissa_range_max" format="float"/>
+    <attr name="axis_ordinate_range_min" format="float"/>
+    <attr name="axis_ordinate_range_max" format="float"/>
+    //points
+    <attr name="point_color" format="color"/>
+    <attr name="line_color" format="color"/>
+    <attr name="draw_point" format="boolean"/>
+    <attr name="draw_lines" format="boolean"/>
+  </declare-styleable>
+</resources>

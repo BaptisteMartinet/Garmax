@@ -3,6 +3,7 @@ package griffith.baptiste.martinet.garmax
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.PointF
 import android.location.Location
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -47,6 +48,12 @@ class MainActivity : AppCompatActivity() {
     liveDistanceText.text = getString(R.string.distance_placeholder).format(0f)
     liveTimeText.text = getString(R.string.time_placeholder).format(_decimalFormatter.format(0), _decimalFormatter.format(0), _decimalFormatter.format(0))
     liveSpeedText.text = getString(R.string.speed_placeholder).format(0f)
+
+    val graph = findViewById<Graph>(R.id.liveSpeedGraph)
+    graph.loadPoint(PointF(0f, 0f))
+    graph.loadPoint(PointF(2f, 1f))
+    graph.loadPoint(PointF(5f, 5f))
+    graph.loadPoint(PointF(10f, 10f))
   }
 
   private fun switchTrackingMode() {
