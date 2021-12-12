@@ -11,10 +11,15 @@ import androidx.core.app.ActivityCompat
 
 class GPSHelper(private val context: Context) {
   private var _isTracking = false
+  private var _isFirstReceivedLocation = true
   private lateinit var _callback: (location: Location) -> Unit
   private val _locationManager: LocationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
   private val _locationListener = object : LocationListener {
     override fun onLocationChanged(location: Location) {
+      if (_isFirstReceivedLocation) {
+        _isFirstReceivedLocation = false
+        return
+      }
       _callback.invoke(location)
     }
     override fun onStatusChanged(provider: String, status: Int, extras: Bundle) {}
@@ -29,6 +34,7 @@ class GPSHelper(private val context: Context) {
       && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
       throw Exception("GPS permission denied")
     }
+    _isFirstReceivedLocation = true
     _callback = callback
     _locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, minTimeMs, minDistanceM, _locationListener)
     _isTracking = true

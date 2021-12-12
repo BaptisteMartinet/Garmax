@@ -5,9 +5,12 @@ import android.graphics.*
 import android.text.TextPaint
 import android.util.AttributeSet
 import android.view.View
+import kotlin.math.abs
+import kotlin.math.max
+import kotlin.math.min
 
 class Graph(context: Context, attrs: AttributeSet) : View(context, attrs) {
-  class GraphRange(private var _min: Float = 0f, private var _max: Float = 0f) {
+  class GraphRange(private var _min: Float = Float.POSITIVE_INFINITY, private var _max: Float = Float.NEGATIVE_INFINITY) {
     private var _length = _max - _min
     fun min(): Float = _min
     fun max(): Float = _max
@@ -15,7 +18,18 @@ class Graph(context: Context, attrs: AttributeSet) : View(context, attrs) {
     fun set(min: Float, max: Float) {
       _min = min
       _max = max
-      _length = max - min
+      computeLength()
+    }
+    fun setMin(min: Float) {
+      _min = min
+      computeLength()
+    }
+    fun setMax(max: Float) {
+      _max = max
+      computeLength()
+    }
+    private fun computeLength() {
+      _length = _max - _min
     }
     fun isInRange(value: Float): Boolean = value in _min.._max
   }
@@ -23,12 +37,14 @@ class Graph(context: Context, attrs: AttributeSet) : View(context, attrs) {
   private val _points: MutableList<PointF> = mutableListOf()
   private val _abscissaAxisName : String
   private val _ordinateAxisName: String
-  private val _abscissaStep: Float
-  private val _ordinateStep: Float
+  private var _abscissaStep: Float
+  private var _ordinateStep: Float
   private val _abscissaRange: GraphRange
   private val _ordinateRange: GraphRange
   private val _drawPoints: Boolean
   private val _drawLines: Boolean
+  var abscissaAxisFormatFunction: (Float) -> String = { value: Float -> "%.2f".format(value) }
+  var ordinateAxisFormatFunction: (Float) -> String = { value: Float -> "%.2f".format(value) }
 
   private val _displaySize = Point()
   private val _graphSize = PointF()
@@ -94,7 +110,7 @@ class Graph(context: Context, attrs: AttributeSet) : View(context, attrs) {
     for (point in _points) {
       val pointPos = pointValueToGraphCoordinates(point) ?: continue
       if (_drawPoints) {
-        canvas.drawCircle(pointPos.x, pointPos.y, _paintLine.strokeWidth * 1.5f, _paintPoint)
+        canvas.drawCircle(pointPos.x, pointPos.y, _paintLine.strokeWidth * 1.5f, _paintPoint) // TODO compute point radius correctly
       }
       if (_drawLines && lastPointPos != null)
         canvas.drawLine(lastPointPos.x, lastPointPos.y, pointPos.x, pointPos.y, _paintLine)
@@ -112,7 +128,7 @@ class Graph(context: Context, attrs: AttributeSet) : View(context, attrs) {
       val x = xValueToGraphCoordinates(i)
       canvas.drawLine(x, _bottomLeft.y, x, _bottomLeft.y - percentX(1f), _paintStep)
       canvas.rotate(90f, x - percentX(1f), _bottomLeft.y + percentY(2f))
-      canvas.drawText("%.1f".format(i) , x - percentX(1f), _bottomLeft.y + percentY(2f), _paintStepValueText)
+      canvas.drawText(abscissaAxisFormatFunction(i) , x - percentX(1f), _bottomLeft.y + percentY(2f), _paintStepValueText)
       canvas.rotate(-90f, x - percentX(1f), _bottomLeft.y + percentY(2f))
       i += _abscissaStep
     }
@@ -127,7 +143,7 @@ class Graph(context: Context, attrs: AttributeSet) : View(context, attrs) {
     while (i <= _ordinateRange.max()) {
       val y = yValueToGraphCoordinates(i)
       canvas.drawLine(_bottomLeft.x, y, _bottomLeft.x + percentX(1f), y, _paintStep)
-      canvas.drawText("%.1f".format(i) , _bottomLeft.x - 20, y + percentY(1f), _paintStepValueText)
+      canvas.drawText(ordinateAxisFormatFunction(i) , _bottomLeft.x - 20, y + percentY(1f), _paintStepValueText)
       i += _ordinateStep
     }
   }
@@ -158,13 +174,45 @@ class Graph(context: Context, attrs: AttributeSet) : View(context, attrs) {
 
   fun loadPoints(points: List<PointF>, autoUpdateRanges: Boolean = false) {
     _points.addAll(points)
-    // TODO recompute ranges on auto update
+    if (autoUpdateRanges) computeRanges()
     invalidate()
   }
 
   fun loadPoint(point: PointF, autoUpdateRanges: Boolean = false) {
     _points.add(point)
-    // TODO recompute ranges on auto update
+    if (autoUpdateRanges) computeRanges()
     invalidate()
+  }
+
+  private fun computeRanges() {
+    if (_points.size < 1)
+      return
+    val newAbscissaRange = GraphRange()
+    var averageAbscissa = 0f
+    val newOrdinateRange = GraphRange()
+    var averageOrdinate = 0f
+
+    var lastPoint: PointF? = null
+    for (point in _points) {
+      if (lastPoint != null) {
+        averageAbscissa += abs(point.x - lastPoint.x)
+        averageOrdinate += abs(point.y - lastPoint.y)
+      }
+      newAbscissaRange.setMin(min(newAbscissaRange.min(), point.x))
+      newAbscissaRange.setMax(max(newAbscissaRange.max(), point.x))
+      newOrdinateRange.setMin(min(newOrdinateRange.min(), point.y))
+      newOrdinateRange.setMax(max(newOrdinateRange.max(), point.y))
+      lastPoint = point
+    }
+    averageAbscissa /= _points.size - 1
+    averageOrdinate /= _points.size - 1
+    if (averageAbscissa > 0) {
+      _abscissaStep = averageAbscissa * 5
+      _abscissaRange.set(newAbscissaRange.min(), newAbscissaRange.max() + (averageAbscissa * 10))
+    }
+    if (averageOrdinate > 0) {
+      _ordinateStep = averageOrdinate
+      _ordinateRange.set(newOrdinateRange.min(), newOrdinateRange.max() + (averageOrdinate * 2)) // TODO allow user to configure ratio
+    }
   }
 }

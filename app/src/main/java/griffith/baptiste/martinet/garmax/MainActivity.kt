@@ -13,6 +13,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import java.text.DecimalFormat
+import java.util.concurrent.TimeUnit
 
 class MainActivity : AppCompatActivity() {
   private lateinit var _gpsHelper: GPSHelper
@@ -51,6 +52,7 @@ class MainActivity : AppCompatActivity() {
     liveSpeedText.text = getString(R.string.speed_placeholder).format(0f)
 
     graphView = findViewById(R.id.liveSpeedGraph)
+    graphView.abscissaAxisFormatFunction = { seconds: Float -> "${_decimalFormatter.format(seconds / 60 / 60 % 24)}:${_decimalFormatter.format(seconds / 60 % 60)}" }
   }
 
   private fun switchTrackingMode() {
@@ -76,11 +78,9 @@ class MainActivity : AppCompatActivity() {
     }
     try {
       _gpxHelper.create()
-      _gpsHelper.startTracking(5000, 0f) { location ->
+      _gpsHelper.startTracking(5000, 5f) { location ->
         _gpxHelper.writeLocation(location)
-        _recordedLocations.add(location)
-        graphView.loadPoint(PointF(location.time.toFloat(), location.speed)) // TODO convert time correctly on a 24 hour scale
-        updateLiveData()
+        updateLiveData(location)
       }
     } catch (e: Exception) {
       Toast.makeText(this, "An error occurred while trying to start the tracking", Toast.LENGTH_SHORT).show()
@@ -100,7 +100,9 @@ class MainActivity : AppCompatActivity() {
     }
   }
 
-  private fun updateLiveData() {
+  private fun updateLiveData(newLocation: Location) {
+    graphView.loadPoint(PointF((TimeUnit.MILLISECONDS.toSeconds(newLocation.time) % 86400).toFloat(), LocationHelper.speedBetweenLocations(_recordedLocations.lastOrNull(), newLocation)), true)
+    _recordedLocations.add(newLocation)
     val nbRecordedLocations = _recordedLocations.size
     //live data
     trackPointsText.text = getString(R.string.track_point_placeholder).format(nbRecordedLocations)

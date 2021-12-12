@@ -2,13 +2,11 @@ package griffith.baptiste.martinet.garmax
 
 import android.location.Location
 import java.text.DecimalFormat
-import kotlin.math.max
-import kotlin.math.min
 
 class LocationHelper {
   class LocationHelperTime(private val _milliseconds: Long) {
     fun getMilliseconds(): Long { return _milliseconds }
-    fun getSeconds(): Long { return _milliseconds / 1000 }
+    fun getSeconds(): Long { return getMilliseconds() / 1000 }
     fun getMinutes(): Long { return  getSeconds() / 60  }
     fun getHours(): Long { return getMinutes() / 60 }
     fun toFormattedString(decimalFormat: DecimalFormat): String {
@@ -34,7 +32,9 @@ class LocationHelper {
       return distance
     }
 
-    fun speedBetweenLocations(loc1: Location, loc2: Location): Float {
+    fun speedBetweenLocations(loc1: Location?, loc2: Location?): Float {
+      if (loc1 == null || loc2 == null)
+        return 0f
       val timeInBetween = timeBetweenLocations(loc1, loc2)
       if (timeInBetween.getSeconds() <= 0)
         return 0f
