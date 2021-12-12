@@ -24,5 +24,9 @@
     <attr name="line_color" format="color"/>
     <attr name="draw_point" format="boolean"/>
     <attr name="draw_lines" format="boolean"/>
+
+    //others
+    <attr name="display_average_bar" format="boolean"/>
+    <attr name="average_bar_color" format="color"/>
   </declare-styleable>
 </resources>

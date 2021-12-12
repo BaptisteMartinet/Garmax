@@ -34,6 +34,7 @@ class Graph(context: Context, attrs: AttributeSet) : View(context, attrs) {
   private val _ordinateRange: GraphRange
   private val _drawPoints: Boolean
   private val _drawLines: Boolean
+  private val _displayAverageBar: Boolean
   var abscissaAxisFormatFunction: (Float) -> String = { value: Float -> "%.2f".format(value) }
   var ordinateAxisFormatFunction: (Float) -> String = { value: Float -> "%.2f".format(value) }
 
@@ -48,6 +49,7 @@ class Graph(context: Context, attrs: AttributeSet) : View(context, attrs) {
   private val _paintStepValueText = TextPaint()
   private val _paintPoint = Paint()
   private val _paintLine = Paint()
+  private val _paintAverageBar = Paint()
 
   init {
     context.theme.obtainStyledAttributes(attrs, R.styleable.Graph, 0, 0).apply {
@@ -58,6 +60,7 @@ class Graph(context: Context, attrs: AttributeSet) : View(context, attrs) {
         _ordinateStep = getFloat(R.styleable.Graph_axis_ordinate_step, 1f)
         _abscissaStepRatio = getFloat(R.styleable.Graph_axis_abscissa_step_ratio, 1f)
         _ordinateStepRatio = getFloat(R.styleable.Graph_axis_ordinate_step_ratio, 1f)
+        _displayAverageBar = getBoolean(R.styleable.Graph_display_average_bar, false)
         _paintStep.color = getColor(R.styleable.Graph_axis_step_color, context.getColor(R.color.white))
         _paintStepValueText.color = getColor(R.styleable.Graph_axis_step_value_color, context.getColor(R.color.white))
         _drawPoints = getBoolean(R.styleable.Graph_draw_point, true)
@@ -69,6 +72,7 @@ class Graph(context: Context, attrs: AttributeSet) : View(context, attrs) {
         _ordinateRange = GraphRange(getFloat(R.styleable.Graph_axis_ordinate_range_min, 0f), getFloat(R.styleable.Graph_axis_ordinate_range_max, 10f))
         _paintPoint.color = getColor(R.styleable.Graph_point_color, context.getColor(R.color.white))
         _paintLine.color = getColor(R.styleable.Graph_line_color, context.getColor(R.color.white))
+        _paintAverageBar.color = getColor(R.styleable.Graph_average_bar_color, context.getColor(R.color.purple_200))
       } finally {
         recycle()
       }
@@ -97,19 +101,30 @@ class Graph(context: Context, attrs: AttributeSet) : View(context, attrs) {
     return PointF(xValueToGraphCoordinates(point.x), yValueToGraphCoordinates(point.y))
   }
 
+  private fun drawAverageBar(averageY: Float, canvas: Canvas) {
+    val y = yValueToGraphCoordinates(averageY)
+    canvas.drawLine(_bottomLeft.x, y, _topRight.x, y, _paintAverageBar)
+  }
+
   private fun drawPoints(canvas: Canvas) {
     _paintLine.strokeWidth = percentY(1f) / (1f + _points.size * 0.01f)
+    _paintAverageBar.strokeWidth = _paintLine.strokeWidth * 0.9f
     val pointRadius = _paintLine.strokeWidth * 1.5f
+
+    var averageY = 0f
     var lastPointPos: PointF? = null
     for (point in _points) {
+      averageY += point.y
       val pointPos = pointValueToGraphCoordinates(point) ?: continue
-      if (_drawPoints) {
+      if (_drawPoints)
         canvas.drawCircle(pointPos.x, pointPos.y, pointRadius, _paintPoint)
-      }
       if (_drawLines && lastPointPos != null)
         canvas.drawLine(lastPointPos.x, lastPointPos.y, pointPos.x, pointPos.y, _paintLine)
       lastPointPos = pointPos
     }
+    averageY /= _points.size
+    if (_displayAverageBar)
+      drawAverageBar(averageY, canvas)
   }
 
   private fun drawAbscissaAxis(canvas: Canvas) {
