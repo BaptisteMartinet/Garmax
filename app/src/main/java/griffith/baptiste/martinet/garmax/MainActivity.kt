@@ -52,7 +52,7 @@ class MainActivity : AppCompatActivity() {
     liveSpeedText.text = getString(R.string.speed_placeholder).format(0f)
 
     graphView = findViewById(R.id.liveSpeedGraph)
-    graphView.abscissaAxisFormatFunction = { seconds: Float -> "${_decimalFormatter.format(seconds / 60 / 60 % 24)}:${_decimalFormatter.format(seconds / 60 % 60)}" }
+    graphView.abscissaAxisFormatFunction = { seconds: Float -> "${_decimalFormatter.format(TimeUnit.HOURS.convert(seconds.toLong(), TimeUnit.SECONDS) % 24)}:${_decimalFormatter.format(TimeUnit.MINUTES.convert(seconds.toLong(), TimeUnit.SECONDS) % 60)}" }
   }
 
   private fun switchTrackingMode() {
@@ -78,9 +78,11 @@ class MainActivity : AppCompatActivity() {
     }
     try {
       _gpxHelper.create()
-      _gpsHelper.startTracking(5000, 5f) { location ->
+      _gpsHelper.startTracking(3000, 0f) { location ->
+        graphView.loadPoint(PointF((TimeUnit.SECONDS.convert(location.time, TimeUnit.MILLISECONDS) % 86400).toFloat(), LocationHelper.speedBetweenLocations(_recordedLocations.lastOrNull(), location) * 3.6f), true)
+        _recordedLocations.add(location)
+        updateLiveData()
         _gpxHelper.writeLocation(location)
-        updateLiveData(location)
       }
     } catch (e: Exception) {
       Toast.makeText(this, "An error occurred while trying to start the tracking", Toast.LENGTH_SHORT).show()
@@ -100,9 +102,7 @@ class MainActivity : AppCompatActivity() {
     }
   }
 
-  private fun updateLiveData(newLocation: Location) {
-    graphView.loadPoint(PointF((TimeUnit.MILLISECONDS.toSeconds(newLocation.time) % 86400).toFloat(), LocationHelper.speedBetweenLocations(_recordedLocations.lastOrNull(), newLocation)), true)
-    _recordedLocations.add(newLocation)
+  private fun updateLiveData() {
     val nbRecordedLocations = _recordedLocations.size
     //live data
     trackPointsText.text = getString(R.string.track_point_placeholder).format(nbRecordedLocations)
@@ -112,6 +112,6 @@ class MainActivity : AppCompatActivity() {
     //circles
     liveDistanceText.text = getString(R.string.distance_placeholder).format(LocationHelper.distanceBetweenLocations(_recordedLocations) / 1000)
     liveTimeText.text = trackDuration.toFormattedString(_decimalFormatter)
-    liveSpeedText.text = getString(R.string.speed_placeholder).format(LocationHelper.speedBetweenLocations(_recordedLocations[nbRecordedLocations - 2], _recordedLocations[nbRecordedLocations - 1]))
+    liveSpeedText.text = getString(R.string.speed_placeholder).format(LocationHelper.speedBetweenLocations(_recordedLocations[nbRecordedLocations - 2], _recordedLocations[nbRecordedLocations - 1]) * 3.6f)
   }
 }

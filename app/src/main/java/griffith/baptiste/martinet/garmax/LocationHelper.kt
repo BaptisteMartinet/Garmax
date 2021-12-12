@@ -2,13 +2,14 @@ package griffith.baptiste.martinet.garmax
 
 import android.location.Location
 import java.text.DecimalFormat
+import java.util.concurrent.TimeUnit
 
 class LocationHelper {
   class LocationHelperTime(private val _milliseconds: Long) {
-    fun getMilliseconds(): Long { return _milliseconds }
-    fun getSeconds(): Long { return getMilliseconds() / 1000 }
-    fun getMinutes(): Long { return  getSeconds() / 60  }
-    fun getHours(): Long { return getMinutes() / 60 }
+    //fun getMilliseconds(): Long { return _milliseconds }
+    fun getSeconds(): Long { return TimeUnit.SECONDS.convert(_milliseconds, TimeUnit.MILLISECONDS) }
+    fun getMinutes(): Long { return TimeUnit.MINUTES.convert(_milliseconds, TimeUnit.MILLISECONDS)  }
+    fun getHours(): Long { return TimeUnit.HOURS.convert(_milliseconds, TimeUnit.MILLISECONDS) }
     fun toFormattedString(decimalFormat: DecimalFormat): String {
       return "${decimalFormat.format(getHours() % 24)}:${decimalFormat.format(getMinutes() % 60)}:${decimalFormat.format(getSeconds() % 60)}"
     }

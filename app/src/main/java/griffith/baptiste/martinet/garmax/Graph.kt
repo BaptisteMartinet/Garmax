@@ -18,17 +18,6 @@ class Graph(context: Context, attrs: AttributeSet) : View(context, attrs) {
     fun set(min: Float, max: Float) {
       _min = min
       _max = max
-      computeLength()
-    }
-    fun setMin(min: Float) {
-      _min = min
-      computeLength()
-    }
-    fun setMax(max: Float) {
-      _max = max
-      computeLength()
-    }
-    private fun computeLength() {
       _length = _max - _min
     }
     fun isInRange(value: Float): Boolean = value in _min.._max
@@ -88,7 +77,6 @@ class Graph(context: Context, attrs: AttributeSet) : View(context, attrs) {
     _paintAxisText.textAlign = Paint.Align.CENTER
 
     _paintLine.strokeCap = Paint.Cap.ROUND
-    _paintLine.strokeWidth = 6f
     _paintLine.isAntiAlias = true
   }
 
@@ -106,11 +94,13 @@ class Graph(context: Context, attrs: AttributeSet) : View(context, attrs) {
   }
 
   private fun drawPoints(canvas: Canvas) {
+    _paintLine.strokeWidth = percentY(1f) / (1f + _points.size * 0.01f)
+    val pointRadius = _paintLine.strokeWidth * 1.5f
     var lastPointPos: PointF? = null
     for (point in _points) {
       val pointPos = pointValueToGraphCoordinates(point) ?: continue
       if (_drawPoints) {
-        canvas.drawCircle(pointPos.x, pointPos.y, _paintLine.strokeWidth * 1.5f, _paintPoint) // TODO compute point radius correctly
+        canvas.drawCircle(pointPos.x, pointPos.y, pointRadius, _paintPoint)
       }
       if (_drawLines && lastPointPos != null)
         canvas.drawLine(lastPointPos.x, lastPointPos.y, pointPos.x, pointPos.y, _paintLine)
@@ -185,34 +175,37 @@ class Graph(context: Context, attrs: AttributeSet) : View(context, attrs) {
   }
 
   private fun computeRanges() {
-    if (_points.size < 1)
+    if (_points.size < 2)
       return
-    val newAbscissaRange = GraphRange()
-    var averageAbscissa = 0f
-    val newOrdinateRange = GraphRange()
-    var averageOrdinate = 0f
+    var abscissaMin = Float.POSITIVE_INFINITY
+    var abscissaMax = Float.NEGATIVE_INFINITY
+    var abscissaAverage = 0f
+
+    var ordinateMin = Float.POSITIVE_INFINITY
+    var ordinateMax = Float.NEGATIVE_INFINITY
+    var ordinateAverage = 0f
 
     var lastPoint: PointF? = null
     for (point in _points) {
       if (lastPoint != null) {
-        averageAbscissa += abs(point.x - lastPoint.x)
-        averageOrdinate += abs(point.y - lastPoint.y)
+        abscissaAverage += abs(point.x - lastPoint.x)
+        ordinateAverage += abs(point.y - lastPoint.y)
       }
-      newAbscissaRange.setMin(min(newAbscissaRange.min(), point.x))
-      newAbscissaRange.setMax(max(newAbscissaRange.max(), point.x))
-      newOrdinateRange.setMin(min(newOrdinateRange.min(), point.y))
-      newOrdinateRange.setMax(max(newOrdinateRange.max(), point.y))
+      abscissaMin = min(abscissaMin, point.x)
+      abscissaMax = max(abscissaMax, point.x)
+      ordinateMin = min(ordinateMin, point.y)
+      ordinateMax = max(ordinateMax, point.y)
       lastPoint = point
     }
-    averageAbscissa /= _points.size - 1
-    averageOrdinate /= _points.size - 1
-    if (averageAbscissa > 0) {
-      _abscissaStep = averageAbscissa * 5
-      _abscissaRange.set(newAbscissaRange.min(), newAbscissaRange.max() + (averageAbscissa * 10))
+    abscissaAverage /= _points.size - 1
+    ordinateAverage /= _points.size - 1
+    if (abscissaAverage > 0) {
+      _abscissaStep = abscissaAverage * 5
+      _abscissaRange.set(abscissaMin, abscissaMax + (abscissaAverage * 10))
     }
-    if (averageOrdinate > 0) {
-      _ordinateStep = averageOrdinate
-      _ordinateRange.set(newOrdinateRange.min(), newOrdinateRange.max() + (averageOrdinate * 2)) // TODO allow user to configure ratio
+    if (ordinateAverage > 0) {
+      _ordinateStep = ordinateAverage
+      _ordinateRange.set(ordinateMin, ordinateMax + (ordinateAverage * 2)) // TODO allow user to configure ratio
     }
   }
 }

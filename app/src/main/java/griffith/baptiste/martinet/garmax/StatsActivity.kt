@@ -22,6 +22,7 @@ class StatsActivity: AppCompatActivity() {
     val backBtn = findViewById<ImageButton>(R.id.backBtn)
     backBtn.setOnClickListener {
       val intent = Intent(this, MainActivity::class.java)
+      intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
       startActivity(intent)
     }
 
@@ -66,7 +67,7 @@ class StatsActivity: AppCompatActivity() {
     val altitudeInfo = LocationHelper.altitudeWithinLocations(mainSegment)
 
     distanceText.text = getString(R.string.distance_placeholder).format(LocationHelper.distanceBetweenLocations(mainSegment) / 1000)
-    speedText.text = getString(R.string.speed_placeholder).format(LocationHelper.speedAverageBetweenLocations(mainSegment))
+    speedText.text = getString(R.string.speed_placeholder).format(LocationHelper.speedAverageBetweenLocations(mainSegment) * 3.6f)
     timeText.text = segmentDuration.toFormattedString(_decimalFormatter)
     altitudeAverageText.text = getString(R.string.altitude_average_placeholder).format(altitudeInfo.average)
     altitudeMinText.text = getString(R.string.altitude_min_placeholder).format(altitudeInfo.min)
