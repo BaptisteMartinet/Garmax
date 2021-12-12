@@ -10,7 +10,7 @@ import kotlin.math.max
 import kotlin.math.min
 
 class Graph(context: Context, attrs: AttributeSet) : View(context, attrs) {
-  class GraphRange(private var _min: Float = Float.POSITIVE_INFINITY, private var _max: Float = Float.NEGATIVE_INFINITY) {
+  class GraphRange(private var _min: Float = 0f, private var _max: Float = 10f) {
     private var _length = _max - _min
     fun min(): Float = _min
     fun max(): Float = _max
@@ -28,6 +28,8 @@ class Graph(context: Context, attrs: AttributeSet) : View(context, attrs) {
   private val _ordinateAxisName: String
   private var _abscissaStep: Float
   private var _ordinateStep: Float
+  private val _abscissaStepRatio: Float
+  private val _ordinateStepRatio: Float
   private val _abscissaRange: GraphRange
   private val _ordinateRange: GraphRange
   private val _drawPoints: Boolean
@@ -54,6 +56,8 @@ class Graph(context: Context, attrs: AttributeSet) : View(context, attrs) {
         _ordinateAxisName = getString(R.styleable.Graph_axis_ordinate_name) ?: "None"
         _abscissaStep = getFloat(R.styleable.Graph_axis_abscissa_step, 1f)
         _ordinateStep = getFloat(R.styleable.Graph_axis_ordinate_step, 1f)
+        _abscissaStepRatio = getFloat(R.styleable.Graph_axis_abscissa_step_ratio, 1f)
+        _ordinateStepRatio = getFloat(R.styleable.Graph_axis_ordinate_step_ratio, 1f)
         _paintStep.color = getColor(R.styleable.Graph_axis_step_color, context.getColor(R.color.white))
         _paintStepValueText.color = getColor(R.styleable.Graph_axis_step_value_color, context.getColor(R.color.white))
         _drawPoints = getBoolean(R.styleable.Graph_draw_point, true)
@@ -200,12 +204,12 @@ class Graph(context: Context, attrs: AttributeSet) : View(context, attrs) {
     abscissaAverage /= _points.size - 1
     ordinateAverage /= _points.size - 1
     if (abscissaAverage > 0) {
-      _abscissaStep = abscissaAverage * 5
-      _abscissaRange.set(abscissaMin, abscissaMax + (abscissaAverage * 10))
+      _abscissaStep = abscissaAverage * _abscissaStepRatio
+      _abscissaRange.set(abscissaMin, abscissaMax + (abscissaAverage * (_abscissaStepRatio * 2)))
     }
     if (ordinateAverage > 0) {
-      _ordinateStep = ordinateAverage
-      _ordinateRange.set(ordinateMin, ordinateMax + (ordinateAverage * 2)) // TODO allow user to configure ratio
+      _ordinateStep = ordinateAverage * _ordinateStepRatio
+      _ordinateRange.set(ordinateMin, ordinateMax + (ordinateAverage * (_ordinateStepRatio * 2)))
     }
   }
 }

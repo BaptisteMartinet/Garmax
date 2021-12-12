@@ -13,6 +13,8 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import java.text.DecimalFormat
+import java.text.SimpleDateFormat
+import java.util.*
 import java.util.concurrent.TimeUnit
 
 class MainActivity : AppCompatActivity() {
@@ -20,6 +22,7 @@ class MainActivity : AppCompatActivity() {
   private lateinit var _gpxHelper: GPXHelper
   private val _recordedLocations: MutableList<Location> = mutableListOf()
   private val _decimalFormatter = DecimalFormat("00")
+  private val _testFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
 
   private lateinit var trackerBtn: ImageButton
   private lateinit var liveDistanceText: TextView
@@ -52,7 +55,7 @@ class MainActivity : AppCompatActivity() {
     liveSpeedText.text = getString(R.string.speed_placeholder).format(0f)
 
     graphView = findViewById(R.id.liveSpeedGraph)
-    graphView.abscissaAxisFormatFunction = { seconds: Float -> "${_decimalFormatter.format(TimeUnit.HOURS.convert(seconds.toLong(), TimeUnit.SECONDS) % 24)}:${_decimalFormatter.format(TimeUnit.MINUTES.convert(seconds.toLong(), TimeUnit.SECONDS) % 60)}" }
+    graphView.abscissaAxisFormatFunction = { seconds: Float -> _testFormat.format(Date(TimeUnit.MILLISECONDS.convert(seconds.toLong(), TimeUnit.SECONDS))) } //"${_decimalFormatter.format(TimeUnit.HOURS.convert(seconds.toLong(), TimeUnit.SECONDS) % 24)}:${_decimalFormatter.format(TimeUnit.MINUTES.convert(seconds.toLong(), TimeUnit.SECONDS) % 60)}" }
   }
 
   private fun switchTrackingMode() {

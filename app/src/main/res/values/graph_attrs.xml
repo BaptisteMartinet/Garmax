@@ -12,6 +12,9 @@
     <attr name="axis_abscissa_step" format="float"/>
     <attr name="axis_ordinate_step" format="float"/>
 
+    <attr name="axis_abscissa_step_ratio" format="float"/>
+    <attr name="axis_ordinate_step_ratio" format="float"/>
+
     <attr name="axis_abscissa_range_min" format="float"/>
     <attr name="axis_abscissa_range_max" format="float"/>
     <attr name="axis_ordinate_range_min" format="float"/>

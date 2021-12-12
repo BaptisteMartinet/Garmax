@@ -77,7 +77,7 @@ class GPXHelper(private val context: Context) {
   private var _file: File? = null
   private val _directoryName: String = "GPStracks"
   private val _extensionName: String = ".gpx"
-  private val _dateFormatter = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ", Locale.UK)
+  private val _dateFormatter = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ", Locale.getDefault())
 
   fun getCurrentFilePath(): String? = _file?.absolutePath
 

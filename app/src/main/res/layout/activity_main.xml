@@ -207,5 +207,7 @@
     app:point_color="@color/garmin_green"
     app:axis_abscissa_range_min="0"
     app:axis_abscissa_range_max="86400"
-    app:axis_abscissa_step="7200" />
+    app:axis_abscissa_step="7200"
+    app:axis_abscissa_step_ratio="5"
+    app:axis_ordinate_step_ratio="1"/>
 </LinearLayout>
