@@ -38,6 +38,12 @@ class MainActivity : AppCompatActivity() {
     _gpsHelper = GPSHelper(this)
     _gpxHelper = GPXHelper(this)
 
+    val explorerBtn = findViewById<ImageButton>(R.id.explorerBtn)
+    explorerBtn.setOnClickListener {
+      val intent = Intent(this, ExplorerActivity::class.java)
+      startActivity(intent)
+    }
+
     trackerBtn = findViewById(R.id.trackerBtn)
     trackerBtn.setOnClickListener {
       switchTrackingMode()

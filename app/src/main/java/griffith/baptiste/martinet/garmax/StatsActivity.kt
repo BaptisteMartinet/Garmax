@@ -28,6 +28,11 @@ class StatsActivity: AppCompatActivity() {
       intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
       startActivity(intent)
     }
+    val explorerBtn = findViewById<ImageButton>(R.id.explorerBtn_statsActivity)
+    explorerBtn.setOnClickListener {
+      val intent = Intent(this, ExplorerActivity::class.java)
+      startActivity(intent)
+    }
 
     val filepath: String = intent.extras?.getString("filepath") ?: ""
     val data: GPXHelper.GPXData

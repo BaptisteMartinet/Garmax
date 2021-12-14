@@ -19,4 +19,9 @@
   <string name="time">Time (h:m:s)</string>
   <string name="time_hm">Time (h:m)</string>
   <string name="altitude">Altitude (m)</string>
+
+  <string name="file_name_placeholder">2021_12_09T00:49:14+0100.gpx</string>
+  <string name="file_date_placeholder">18/02/2021 14:27</string>
+  <string name="storage_path_placeholder">Loaded from: %s</string>
+  <string name="past_activity_title">Your past activity</string>
 </resources>
