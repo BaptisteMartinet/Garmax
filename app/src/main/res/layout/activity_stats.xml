@@ -190,7 +190,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
-            android:text="@string/speed"
+            android:text="@string/speed_average"
             android:textColor="@color/white"
             android:textSize="18sp"
             app:layout_constraintBottom_toBottomOf="@+id/statCardHeader2"
@@ -350,9 +350,9 @@
             android:textColor="@color/white"
             android:textSize="22sp"
             android:textStyle="bold"
-            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/statCardHeader4" />
 
           <TextView
@@ -369,6 +369,21 @@
             app:layout_constraintTop_toBottomOf="@+id/statCardHeader4" />
         </androidx.constraintlayout.widget.ConstraintLayout>
       </LinearLayout>
+
+      <griffith.baptiste.martinet.garmax.Graph
+        android:id="@+id/speedGraph"
+        android:layout_width="match_parent"
+        android:layout_height="250dp"
+        app:axis_abscissa_name="@string/time_hm"
+        app:axis_abscissa_range_max="86400"
+        app:axis_abscissa_range_min="0"
+        app:axis_abscissa_step="7200"
+        app:axis_abscissa_step_ratio="5"
+        app:axis_ordinate_name="@string/speed"
+        app:axis_ordinate_step_ratio="1"
+        app:axis_stroke_width="4"
+        app:line_color="@color/garmin_green"
+        app:point_color="@color/garmin_green" />
     </LinearLayout>
   </ScrollView>
 </LinearLayout>

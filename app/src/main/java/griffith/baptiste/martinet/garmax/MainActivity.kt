@@ -22,7 +22,7 @@ class MainActivity : AppCompatActivity() {
   private lateinit var _gpxHelper: GPXHelper
   private val _recordedLocations: MutableList<Location> = mutableListOf()
   private val _decimalFormatter = DecimalFormat("00")
-  private val _testFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
+  private val _timeFormatter = SimpleDateFormat("HH:mm", Locale.getDefault())
 
   private lateinit var trackerBtn: ImageButton
   private lateinit var liveDistanceText: TextView
@@ -55,7 +55,7 @@ class MainActivity : AppCompatActivity() {
     liveSpeedText.text = getString(R.string.speed_placeholder).format(0f)
 
     graphView = findViewById(R.id.liveSpeedGraph)
-    graphView.abscissaAxisFormatFunction = { seconds: Float -> _testFormat.format(Date(TimeUnit.MILLISECONDS.convert(seconds.toLong(), TimeUnit.SECONDS))) } //"${_decimalFormatter.format(TimeUnit.HOURS.convert(seconds.toLong(), TimeUnit.SECONDS) % 24)}:${_decimalFormatter.format(TimeUnit.MINUTES.convert(seconds.toLong(), TimeUnit.SECONDS) % 60)}" }
+    graphView.abscissaAxisFormatFunction = { seconds: Float -> _timeFormatter.format(Date(TimeUnit.MILLISECONDS.convert(seconds.toLong(), TimeUnit.SECONDS))) }
   }
 
   private fun switchTrackingMode() {
@@ -79,9 +79,11 @@ class MainActivity : AppCompatActivity() {
       requestPermissions(arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION), 1)
       return
     }
+    _recordedLocations.clear()
+    graphView.resetPoints()
     try {
       _gpxHelper.create()
-      _gpsHelper.startTracking(3000, 0f) { location ->
+      _gpsHelper.startTracking(2000, 0f) { location ->
         graphView.loadPoint(PointF((TimeUnit.SECONDS.convert(location.time, TimeUnit.MILLISECONDS) % 86400).toFloat(), LocationHelper.speedBetweenLocations(_recordedLocations.lastOrNull(), location) * 3.6f), true)
         _recordedLocations.add(location)
         updateLiveData()

@@ -56,8 +56,8 @@ class Graph(context: Context, attrs: AttributeSet) : View(context, attrs) {
       try {
         _abscissaAxisName = getString(R.styleable.Graph_axis_abscissa_name) ?: "None"
         _ordinateAxisName = getString(R.styleable.Graph_axis_ordinate_name) ?: "None"
-        _abscissaStep = getFloat(R.styleable.Graph_axis_abscissa_step, 1f)
-        _ordinateStep = getFloat(R.styleable.Graph_axis_ordinate_step, 1f)
+        _abscissaStep = abs(getFloat(R.styleable.Graph_axis_abscissa_step, 1f))
+        _ordinateStep = abs(getFloat(R.styleable.Graph_axis_ordinate_step, 1f))
         _abscissaStepRatio = getFloat(R.styleable.Graph_axis_abscissa_step_ratio, 1f)
         _ordinateStepRatio = getFloat(R.styleable.Graph_axis_ordinate_step_ratio, 1f)
         _displayAverageBar = getBoolean(R.styleable.Graph_display_average_bar, false)
@@ -129,6 +129,7 @@ class Graph(context: Context, attrs: AttributeSet) : View(context, attrs) {
 
   private fun drawAbscissaAxis(canvas: Canvas) {
     canvas.drawLine(_bottomLeft.x, _bottomLeft.y, _topRight.x, _bottomLeft.y, _paintAxis)
+    _paintAxisText.textAlign = Paint.Align.CENTER
     canvas.drawText(_abscissaAxisName, percentX(50f), percentY(98f), _paintAxisText)
 
     _paintStepValueText.textAlign = Paint.Align.LEFT
@@ -145,7 +146,8 @@ class Graph(context: Context, attrs: AttributeSet) : View(context, attrs) {
 
   private fun drawOrdinateAxis(canvas: Canvas) {
     canvas.drawLine(_bottomLeft.x, _bottomLeft.y, _bottomLeft.x, _topRight.y, _paintAxis)
-    canvas.drawText(_ordinateAxisName, percentX(10f), percentY(6f), _paintAxisText)
+    _paintAxisText.textAlign = Paint.Align.LEFT
+    canvas.drawText(_ordinateAxisName, percentX(1f), percentY(4f), _paintAxisText)
 
     _paintStepValueText.textAlign = Paint.Align.RIGHT
     var i = _ordinateRange.min() + _ordinateStep
@@ -158,7 +160,7 @@ class Graph(context: Context, attrs: AttributeSet) : View(context, attrs) {
   }
 
   private fun drawAxis(canvas: Canvas) {
-    _paintAxisText.textSize = percentX(3.5f)
+    _paintAxisText.textSize = percentX(3.2f)
     _paintStepValueText.textSize = percentX(2.2f)
     drawAbscissaAxis(canvas)
     drawOrdinateAxis(canvas)
@@ -191,6 +193,10 @@ class Graph(context: Context, attrs: AttributeSet) : View(context, attrs) {
     _points.add(point)
     if (autoUpdateRanges) computeRanges()
     invalidate()
+  }
+
+  fun resetPoints() {
+    _points.clear()
   }
 
   private fun computeRanges() {

@@ -1,6 +1,7 @@
 package griffith.baptiste.martinet.garmax
 
 import android.content.Intent
+import android.graphics.PointF
 import android.location.Location
 import android.os.Bundle
 import android.util.Log
@@ -10,10 +11,12 @@ import androidx.appcompat.app.AppCompatActivity
 import java.text.DecimalFormat
 import java.text.SimpleDateFormat
 import java.util.*
+import java.util.concurrent.TimeUnit
 
 class StatsActivity: AppCompatActivity() {
   private val _gpxHelper = GPXHelper(this)
   private val _decimalFormatter = DecimalFormat("00")
+  private val _timeFormatter = SimpleDateFormat("HH:mm", Locale.getDefault())
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -72,5 +75,10 @@ class StatsActivity: AppCompatActivity() {
     altitudeAverageText.text = getString(R.string.altitude_average_placeholder).format(altitudeInfo.average)
     altitudeMinText.text = getString(R.string.altitude_min_placeholder).format(altitudeInfo.min)
     altitudeMaxText.text = getString(R.string.altitude_max_placeholder).format(altitudeInfo.max)
+
+    //graph
+    val speedGraph = findViewById<Graph>(R.id.speedGraph)
+    speedGraph.abscissaAxisFormatFunction = { seconds: Float -> _timeFormatter.format(Date(TimeUnit.MILLISECONDS.convert(seconds.toLong(), TimeUnit.SECONDS))) }
+    speedGraph.loadPoints(mainSegment.mapIndexed { index: Int, location: Location -> PointF((TimeUnit.SECONDS.convert(location.time, TimeUnit.MILLISECONDS) % 86400).toFloat(), LocationHelper.speedBetweenLocations(mainSegment.getOrNull(index - 1), location) * 3.6f) }, true)
   }
 }
