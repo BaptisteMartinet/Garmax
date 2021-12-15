@@ -7,7 +7,6 @@ import android.graphics.PointF
 import android.location.Location
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
@@ -80,11 +79,8 @@ class MainActivity : AppCompatActivity() {
       startActivity(intent)
       return
     }
-    if (ActivityCompat.checkSelfPermission(this,  Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-      && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-      requestPermissions(arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION), 1)
+    if (!ensurePermissions())
       return
-    }
     _recordedLocations.clear()
     graphView.resetPoints()
     try {
@@ -102,13 +98,27 @@ class MainActivity : AppCompatActivity() {
     trackerBtn.setImageResource(R.drawable.ic_baseline_pause_circle_outline_24)
   }
 
+  private fun ensurePermissions(): Boolean {
+    if (ActivityCompat.checkSelfPermission(this,  Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_DENIED
+      || ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_DENIED
+      || ActivityCompat.checkSelfPermission(this,  Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED
+      || ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED) {
+      requestPermissions(arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE), 1)
+      return false
+    }
+    return true
+  }
+
   override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
     super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-    if(requestCode == 1 && grantResults.size >= 2) {
-      if(grantResults[0] == PackageManager.PERMISSION_DENIED || grantResults[1] == PackageManager.PERMISSION_DENIED) {
-        Log.i("debug", "Location permissions denied.")
-      } else {
-        switchTrackingMode()
+    when (requestCode) {
+      1 -> {
+        if (permissions.size >= 2 && grantResults[0] == PackageManager.PERMISSION_DENIED || grantResults[1] == PackageManager.PERMISSION_DENIED)
+          Toast.makeText(this, "GPS permissions denied.", Toast.LENGTH_SHORT).show()
+        else
+          switchTrackingMode()
+        if (permissions.size >= 4 && grantResults[2] == PackageManager.PERMISSION_DENIED || grantResults[3] == PackageManager.PERMISSION_DENIED)
+          Toast.makeText(this, "Read/Write permissions denied.", Toast.LENGTH_SHORT).show()
       }
     }
   }
@@ -117,12 +127,10 @@ class MainActivity : AppCompatActivity() {
     val nbRecordedLocations = _recordedLocations.size
     //live data
     trackPointsText.text = getString(R.string.track_point_placeholder).format(nbRecordedLocations)
-    if (nbRecordedLocations < 2)
-      return
-    val trackDuration = LocationHelper.timeBetweenLocations(_recordedLocations.first(), _recordedLocations.last())
+    val trackDuration = LocationHelper.timeBetweenLocations(_recordedLocations.firstOrNull(), _recordedLocations.lastOrNull())
     //circles
     liveDistanceText.text = getString(R.string.distance_placeholder).format(LocationHelper.distanceBetweenLocations(_recordedLocations) / 1000)
     liveTimeText.text = trackDuration.toFormattedString(_decimalFormatter)
-    liveSpeedText.text = getString(R.string.speed_placeholder).format(LocationHelper.speedBetweenLocations(_recordedLocations[nbRecordedLocations - 2], _recordedLocations[nbRecordedLocations - 1]) * 3.6f)
+    liveSpeedText.text = getString(R.string.speed_placeholder).format(LocationHelper.speedBetweenLocations(_recordedLocations.getOrNull(nbRecordedLocations - 2), _recordedLocations.lastOrNull()) * 3.6f)
   }
 }

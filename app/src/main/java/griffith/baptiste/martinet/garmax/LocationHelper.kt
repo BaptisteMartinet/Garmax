@@ -52,7 +52,9 @@ class LocationHelper {
       return totalSpeed / (locations.size - 1)
     }
 
-    fun timeBetweenLocations(loc1: Location, loc2: Location): LocationHelperTime {
+    fun timeBetweenLocations(loc1: Location?, loc2: Location?): LocationHelperTime {
+      if (loc1 == null || loc2 == null)
+        return LocationHelperTime(0)
       return LocationHelperTime(loc2.time - loc1.time)
     }
 

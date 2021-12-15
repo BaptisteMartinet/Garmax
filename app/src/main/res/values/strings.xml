@@ -6,7 +6,7 @@
   <string name="distance_placeholder">%.2f</string>
   <string name="speed_placeholder">%.2f</string>
   <string name="time_placeholder">%s:%s:%s</string>
-  <string name="track_point_placeholder">%d trkpt</string>
+  <string name="track_point_placeholder">%d trkpts</string>
   <string name="altitude_average_placeholder">av. %.2f</string>
   <string name="altitude_min_placeholder">min. %.2f</string>
   <string name="altitude_max_placeholder">max. %.2f</string>
