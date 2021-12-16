@@ -153,7 +153,7 @@ class GPXHelper(private val context: Context) {
         i += 2
       } else {
         map["content"] = groups[i]!!.value
-        i++
+        break
       }
     }
     return map

@@ -4,7 +4,6 @@ import android.content.Intent
 import android.graphics.PointF
 import android.location.Location
 import android.os.Bundle
-import android.util.Log
 import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
@@ -27,6 +26,7 @@ class StatsActivity: AppCompatActivity() {
     backBtn.setOnClickListener {
       this.finish()
     }
+
     val explorerBtn = findViewById<ImageButton>(R.id.explorerBtn_statsActivity)
     explorerBtn.setOnClickListener {
       val intent = Intent(this, ExplorerActivity::class.java)

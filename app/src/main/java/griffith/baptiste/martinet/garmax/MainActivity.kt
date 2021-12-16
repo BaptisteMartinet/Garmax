@@ -85,7 +85,7 @@ class MainActivity : AppCompatActivity() {
     graphView.resetPoints()
     try {
       _gpxHelper.create()
-      _gpsHelper.startTracking(2000, 0f) { location ->
+      _gpsHelper.startTracking(5000, 0f) { location ->
         graphView.loadPoint(PointF((TimeUnit.SECONDS.convert(location.time, TimeUnit.MILLISECONDS) % 86400).toFloat(), LocationHelper.speedBetweenLocations(_recordedLocations.lastOrNull(), location) * 3.6f), true)
         _recordedLocations.add(location)
         updateLiveData()

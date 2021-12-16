@@ -381,7 +381,7 @@
         app:axis_abscissa_step="7200"
         app:axis_abscissa_step_ratio="5"
         app:axis_ordinate_name="@string/speed"
-        app:axis_ordinate_step_ratio="1"
+        app:axis_ordinate_step_ratio="2"
         app:axis_stroke_width="4"
         app:line_color="@color/garmin_green"
         app:point_color="@color/garmin_green" />

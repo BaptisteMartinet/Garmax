@@ -21,7 +21,9 @@ class LocationHelper {
   }
 
   companion object {
-    private fun distanceBetweenLocations(loc1: Location, loc2: Location): Float {
+    private fun distanceBetweenLocations(loc1: Location?, loc2: Location?): Float {
+      if (loc1 == null || loc2 == null)
+        return 0f
       return loc1.distanceTo(loc2)
     }
 

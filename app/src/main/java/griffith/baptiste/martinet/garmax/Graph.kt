@@ -35,6 +35,8 @@ class Graph(context: Context, attrs: AttributeSet) : View(context, attrs) {
   private val _drawPoints: Boolean
   private val _drawLines: Boolean
   private val _displayAverageBar: Boolean
+
+  // Public variables since i want the user to be able to customize axis value formatting
   var abscissaAxisFormatFunction: (Float) -> String = { value: Float -> "%.2f".format(value) }
   var ordinateAxisFormatFunction: (Float) -> String = { value: Float -> "%.2f".format(value) }
 
@@ -185,13 +187,15 @@ class Graph(context: Context, attrs: AttributeSet) : View(context, attrs) {
 
   fun loadPoints(points: List<PointF>, autoUpdateRanges: Boolean = false) {
     _points.addAll(points)
-    if (autoUpdateRanges) computeRanges()
+    if (autoUpdateRanges)
+      computeRanges()
     invalidate()
   }
 
   fun loadPoint(point: PointF, autoUpdateRanges: Boolean = false) {
     _points.add(point)
-    if (autoUpdateRanges) computeRanges()
+    if (autoUpdateRanges)
+      computeRanges()
     invalidate()
   }
 
