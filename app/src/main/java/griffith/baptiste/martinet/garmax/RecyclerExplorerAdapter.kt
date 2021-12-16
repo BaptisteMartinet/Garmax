@@ -1,5 +1,7 @@
 package griffith.baptiste.martinet.garmax
 
+import android.content.Context
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -8,7 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import java.text.SimpleDateFormat
 import java.util.*
 
-class RecyclerExplorerAdapter(private val dataSet: List<ExplorerFile>) : RecyclerView.Adapter<RecyclerExplorerAdapter.ViewHolder>() {
+class RecyclerExplorerAdapter(private val context: Context, private val dataSet: List<ExplorerFile>) : RecyclerView.Adapter<RecyclerExplorerAdapter.ViewHolder>() {
   class ExplorerFile(val filename: String, val absolutePath: String, val lastModified: Long)
 
   class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -27,7 +29,11 @@ class RecyclerExplorerAdapter(private val dataSet: List<ExplorerFile>) : Recycle
     val file = dataSet[position]
     holder.recyclerExplorerFileNameText.text = file.filename
     holder.recyclerExplorerLastModifiedText.text = _dateFormatter.format(Date(file.lastModified))
-    // TODO handle click
+    holder.itemView.setOnClickListener {
+      val intent = Intent(context, StatsActivity::class.java)
+      intent.putExtra("filepath", file.absolutePath)
+      context.startActivity(intent)
+    }
   }
 
   override fun getItemCount(): Int = dataSet.count()

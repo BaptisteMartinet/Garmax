@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.ImageButton
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import java.text.DecimalFormat
 import java.text.SimpleDateFormat
@@ -24,9 +25,7 @@ class StatsActivity: AppCompatActivity() {
 
     val backBtn = findViewById<ImageButton>(R.id.backBtn)
     backBtn.setOnClickListener {
-      val intent = Intent(this, MainActivity::class.java)
-      intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
-      startActivity(intent)
+      this.finish()
     }
     val explorerBtn = findViewById<ImageButton>(R.id.explorerBtn_statsActivity)
     explorerBtn.setOnClickListener {
@@ -34,20 +33,19 @@ class StatsActivity: AppCompatActivity() {
       startActivity(intent)
     }
 
-    val filepath: String = intent.extras?.getString("filepath") ?: ""
-    val data: GPXHelper.GPXData
-    val mainTrack: GPXHelper.GPXTrack
-    val mainSegment: List<Location>
     try {
-      data = _gpxHelper.readFile(filepath)
-      mainTrack = data.tracks.first()
-      mainSegment = mainTrack.segments.first()
+        fillData()
     } catch (e: Exception) {
-      if (e is GPXParsingError) {
-        Log.i("debug", e.message!!)
-      }
-      return
+      Toast.makeText(this, "There was an error loading this page", Toast.LENGTH_SHORT).show()
     }
+  }
+
+  private fun fillData() {
+    val filepath: String = intent.extras?.getString("filepath") ?: throw Exception("No filepath specified")
+    val data: GPXHelper.GPXData = _gpxHelper.readFile(filepath)
+    val mainTrack: GPXHelper.GPXTrack = data.tracks.first()
+    val mainSegment: List<Location> = mainTrack.segments.first()
+
     val dateFormatterTZ = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ", Locale.getDefault())
     val dateFormatter = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
 
