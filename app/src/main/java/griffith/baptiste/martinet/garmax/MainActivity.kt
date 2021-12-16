@@ -113,12 +113,15 @@ class MainActivity : AppCompatActivity() {
     super.onRequestPermissionsResult(requestCode, permissions, grantResults)
     when (requestCode) {
       1 -> {
-        if (permissions.size >= 2 && grantResults[0] == PackageManager.PERMISSION_DENIED || grantResults[1] == PackageManager.PERMISSION_DENIED)
-          Toast.makeText(this, "GPS permissions denied.", Toast.LENGTH_SHORT).show()
+        if (grantResults.size < 4)
+          return
+        if (grantResults[0] == PackageManager.PERMISSION_DENIED
+          || grantResults[1] == PackageManager.PERMISSION_DENIED
+          || grantResults[2] == PackageManager.PERMISSION_DENIED
+          || grantResults[3] == PackageManager.PERMISSION_DENIED)
+          Toast.makeText(this, "GPS & external Read/Write permissions are needed.", Toast.LENGTH_SHORT).show()
         else
           switchTrackingMode()
-        if (permissions.size >= 4 && grantResults[2] == PackageManager.PERMISSION_DENIED || grantResults[3] == PackageManager.PERMISSION_DENIED)
-          Toast.makeText(this, "Read/Write permissions denied.", Toast.LENGTH_SHORT).show()
       }
     }
   }
