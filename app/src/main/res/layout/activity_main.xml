@@ -207,6 +207,7 @@
     app:axis_abscissa_range_min="0"
     app:axis_abscissa_step="7200"
     app:axis_abscissa_step_ratio="5"
+    app:axis_auto_update_ranges="true"
     app:axis_ordinate_name="@string/speed"
     app:axis_ordinate_step_ratio="2"
     app:axis_stroke_width="4"

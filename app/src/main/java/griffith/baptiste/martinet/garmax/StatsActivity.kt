@@ -82,6 +82,6 @@ class StatsActivity: AppCompatActivity() {
     //graph
     val speedGraph = findViewById<Graph>(R.id.speedGraph)
     speedGraph.abscissaAxisFormatFunction = { seconds: Float -> _timeFormatter.format(Date(TimeUnit.MILLISECONDS.convert(seconds.toLong(), TimeUnit.SECONDS))) }
-    speedGraph.loadPoints(mainSegment.mapIndexed { index: Int, location: Location -> PointF((TimeUnit.SECONDS.convert(location.time, TimeUnit.MILLISECONDS) % 86400).toFloat(), LocationHelper.speedBetweenLocations(mainSegment.getOrNull(index - 1), location) * 3.6f) }, true)
+    speedGraph.loadPoints(mainSegment.mapIndexed { index: Int, location: Location -> PointF((TimeUnit.SECONDS.convert(location.time, TimeUnit.MILLISECONDS) % 86400).toFloat(), LocationHelper.speedBetweenLocations(mainSegment.getOrNull(index - 1), location) * 3.6f) })
   }
 }

@@ -30,6 +30,7 @@ class Graph(context: Context, attrs: AttributeSet) : View(context, attrs) {
   private var _ordinateStep: Float
   private val _abscissaStepRatio: Float
   private val _ordinateStepRatio: Float
+  private val _autoUpdateRanges: Boolean
   private val _abscissaRange: GraphRange
   private val _ordinateRange: GraphRange
   private val _drawPoints: Boolean
@@ -62,6 +63,7 @@ class Graph(context: Context, attrs: AttributeSet) : View(context, attrs) {
         _ordinateStep = abs(getFloat(R.styleable.Graph_axis_ordinate_step, 1f))
         _abscissaStepRatio = getFloat(R.styleable.Graph_axis_abscissa_step_ratio, 1f)
         _ordinateStepRatio = getFloat(R.styleable.Graph_axis_ordinate_step_ratio, 1f)
+        _autoUpdateRanges = getBoolean(R.styleable.Graph_axis_auto_update_ranges, false)
         _displayAverageBar = getBoolean(R.styleable.Graph_display_average_bar, false)
         _paintStep.color = getColor(R.styleable.Graph_axis_step_color, context.getColor(R.color.white))
         _paintStepValueText.color = getColor(R.styleable.Graph_axis_step_value_color, context.getColor(R.color.white))
@@ -185,16 +187,16 @@ class Graph(context: Context, attrs: AttributeSet) : View(context, attrs) {
     _graphSize.set(_topRight.x - _bottomLeft.x, _bottomLeft.y - _topRight.y)
   }
 
-  fun loadPoints(points: List<PointF>, autoUpdateRanges: Boolean = false) {
+  fun loadPoints(points: List<PointF>) {
     _points.addAll(points)
-    if (autoUpdateRanges)
+    if (_autoUpdateRanges)
       computeRanges()
     invalidate()
   }
 
-  fun loadPoint(point: PointF, autoUpdateRanges: Boolean = false) {
+  fun loadPoint(point: PointF) {
     _points.add(point)
-    if (autoUpdateRanges)
+    if (_autoUpdateRanges)
       computeRanges()
     invalidate()
   }
