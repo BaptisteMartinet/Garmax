@@ -137,7 +137,7 @@ class Graph(context: Context, attrs: AttributeSet) : View(context, attrs) {
     canvas.drawText(_abscissaAxisName, percentX(50f), percentY(98f), _paintAxisText)
 
     _paintStepValueText.textAlign = Paint.Align.LEFT
-    var i = _abscissaRange.min() + _abscissaStep
+    var i = _abscissaRange.min()
     while (i <= _abscissaRange.max()) {
       val x = xValueToGraphCoordinates(i)
       canvas.drawLine(x, _bottomLeft.y, x, _bottomLeft.y - percentX(1f), _paintStep)
@@ -154,7 +154,7 @@ class Graph(context: Context, attrs: AttributeSet) : View(context, attrs) {
     canvas.drawText(_ordinateAxisName, percentX(1f), percentY(4f), _paintAxisText)
 
     _paintStepValueText.textAlign = Paint.Align.RIGHT
-    var i = _ordinateRange.min() + _ordinateStep
+    var i = _ordinateRange.min()
     while (i <= _ordinateRange.max()) {
       val y = yValueToGraphCoordinates(i)
       canvas.drawLine(_bottomLeft.x, y, _bottomLeft.x + percentX(1f), y, _paintStep)
@@ -231,12 +231,12 @@ class Graph(context: Context, attrs: AttributeSet) : View(context, attrs) {
     abscissaAverage /= _points.size - 1
     ordinateAverage /= _points.size - 1
     if (abscissaAverage > 0) {
-      _abscissaStep = abscissaAverage * _abscissaStepRatio
       _abscissaRange.set(abscissaMin, abscissaMax + (abscissaAverage * (_abscissaStepRatio * 2)))
+      _abscissaStep = _abscissaRange.length() / (1 + (_points.size * 0.05f))
     }
     if (ordinateAverage > 0) {
-      _ordinateStep = ordinateAverage * _ordinateStepRatio
       _ordinateRange.set(ordinateMin, ordinateMax + (ordinateAverage * (_ordinateStepRatio * 2)))
+      _ordinateStep = _ordinateRange.length() / (1 + (_points.size * 0.05f))
     }
   }
 }
